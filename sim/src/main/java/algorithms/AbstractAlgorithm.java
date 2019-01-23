@@ -4,7 +4,6 @@ import models.AbstractNode;
 import models.Graph;
 
 public abstract class AbstractAlgorithm {
-	protected Graph graph;
 	
 	public abstract void initGraph();
 	

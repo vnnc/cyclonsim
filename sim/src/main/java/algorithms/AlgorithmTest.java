@@ -7,20 +7,15 @@ import models.*;
 
 public class AlgorithmTest extends AbstractAlgorithm {
 
+	private Graph<SimpleNode> graph;
 	public void initGraph() {
-		this.graph = new Graph(Edge.class);
-		this.graph.addVertex(new NodeTest(1));
-		this.graph.addVertex(new NodeTest(2));
+		this.graph = new Graph<SimpleNode>(SimpleNode.class);
+		this.graph.addVertex(new SimpleNode(1));
+		this.graph.addVertex(new SimpleNode(2));
 	}
 	
 	public void shuffle() {
-		Set<NodeTest> set = this.graph.vertexSet();
-		Iterator<NodeTest> setiter = set.iterator();
-		while(setiter.hasNext()) {
-			if(setiter.next().getLabel() == 2) {
-				System.out.println("Found vertex 2");
-			}
-		}
+
 	}
 	
 	public void testKhi2() {

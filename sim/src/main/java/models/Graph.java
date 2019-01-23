@@ -8,6 +8,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -64,10 +65,25 @@ public class Graph<T1> extends SimpleDirectedGraph<T1, Edge> {
             AbstractNode next = (AbstractNode) niter.next();
             if(next.getLabel() == label)
             {
-                return niter.next();
+                return (T1) next;
             }
         }
 
         return (T1) new NodeTest(0);
+    }
+
+    public ArrayList<T1> getNeighborsOfNode(T1 node)
+    {
+        ArrayList<T1> res = new ArrayList<T1>();
+        Set<Edge> edges_set = this.edgesOf(node);
+        for(Edge edge : edges_set)
+        {
+            AbstractNode target = (AbstractNode) this.getEdgeTarget(edge);
+            if(target.getLabel()!=((AbstractNode) node).getLabel())
+            {
+                res.add(this.getEdgeTarget(edge));
+            }
+        }
+        return res;
     }
 }
