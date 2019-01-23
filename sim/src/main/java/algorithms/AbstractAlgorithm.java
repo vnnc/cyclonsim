@@ -1,21 +1,18 @@
 package algorithms;
 
-public class AbstractAlgorithm {
-	private AbstractGraph graph;
+import models.AbstractNode;
+import models.Graph;
+
+public abstract class AbstractAlgorithm {
+	protected Graph graph;
 	
-	public void initGraph() {
-		
-	}
+	public abstract void initGraph();
 	
-	public void shuffle() {
-		
-	}
+	public abstract void shuffle();
 	
 	public void testKhi2() {
-		
+		// TODO
 	}
 	
-	public AbstractNode nextPeer() {
-		
-	}
+	public abstract AbstractNode nextPeer();
 }
