@@ -1,13 +1,18 @@
 package models;
 
-public class Edge {
+public class Edge<T> {
 
-    AbstractNode x;
-    AbstractNode y;
+    T x;
+    T y;
 
-    public Edge()
+    public Edge(T n1, T n2)
     {
-
+        this.x = n1;
+        this.y = n2;
     }
 
+    @Override
+    public String toString() {
+        return "["+x+" "+y+"]";
+    }
 }

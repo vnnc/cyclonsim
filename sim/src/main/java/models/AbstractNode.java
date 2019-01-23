@@ -13,4 +13,9 @@ public abstract class AbstractNode {
     public int getLabel() {
         return this.label;
     }
+
+    @Override
+    public String toString() {
+        return ""+label;
+    }
 }
