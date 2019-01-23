@@ -7,7 +7,7 @@ public abstract class AbstractAlgorithm {
 	
 	public abstract void initGraph();
 	
-	public abstract void shuffle();
+	public abstract void shuffle(int nodeLabel,int shuffleLength);
 	
 	public void testKhi2() {
 		// TODO

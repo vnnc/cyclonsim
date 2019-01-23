@@ -13,10 +13,12 @@ public class AlgorithmTest extends AbstractAlgorithm {
 		this.graph.addVertex(new SimpleNode(1));
 		this.graph.addVertex(new SimpleNode(2));
 	}
-	
-	public void shuffle() {
+
+	@Override
+	public void shuffle(int nodeLabel, int shuffleLength) {
 
 	}
+
 	
 	public void testKhi2() {
 		// TODO

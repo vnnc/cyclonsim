@@ -3,6 +3,7 @@ package models;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.generate.RandomGraphGenerator;
+import org.jgrapht.generate.*;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.lang.reflect.Constructor;
@@ -69,7 +70,7 @@ public class Graph<T1> extends SimpleDirectedGraph<T1, Edge> {
             }
         }
 
-        return (T1) new NodeTest(0);
+        return (T1) new EmptyNode();
     }
 
     public ArrayList<T1> getNeighborsOfNode(T1 node)
