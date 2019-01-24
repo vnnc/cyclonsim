@@ -7,9 +7,10 @@ import models.*;
 
 public class AlgorithmTest extends AbstractAlgorithm {
 
-	private Graph<SimpleNode> graph;
+	private Graph<SimpleNode,SimpleEdge> graph;
+
 	public void initGraph() {
-		this.graph = new Graph<SimpleNode>(SimpleNode.class);
+		this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
 		this.graph.addVertex(new SimpleNode(1));
 		this.graph.addVertex(new SimpleNode(2));
 	}
@@ -25,6 +26,6 @@ public class AlgorithmTest extends AbstractAlgorithm {
 	}
 	
 	public AbstractNode nextPeer() {
-		return new NodeTest(2);
+		return new EmptyNode();
 	}
 }

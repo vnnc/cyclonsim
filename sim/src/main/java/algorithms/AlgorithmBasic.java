@@ -1,7 +1,7 @@
 package algorithms;
 
 import models.AbstractNode;
-import models.Edge;
+import models.SimpleEdge;
 import models.Graph;
 import models.SimpleNode;
 
@@ -11,13 +11,13 @@ import java.util.Random;
 
 public class AlgorithmBasic extends AbstractAlgorithm{
 
-    private Graph<SimpleNode> graph;
+    private Graph<SimpleNode,SimpleEdge> graph;
 
     private Random rng = new Random();
 
     @Override
     public void initGraph() {
-        this.graph = new Graph<SimpleNode>(SimpleNode.class);
+        this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
         this.graph.generateRandom(5,9);
     }
 
@@ -77,7 +77,7 @@ public class AlgorithmBasic extends AbstractAlgorithm{
 
                 System.out.println("Subset of peer neighbors: "+peerNeighborsSubset);
 
-                ArrayList<Edge> newEdges = new ArrayList<Edge>();
+                ArrayList<SimpleEdge> newEdges = new ArrayList<SimpleEdge>();
 
                 ArrayList<SimpleNode> nodeKeptEntries = new ArrayList<SimpleNode>();
 

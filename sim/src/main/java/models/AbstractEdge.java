@@ -1,11 +1,11 @@
 package models;
 
-public class Edge<T> {
+public abstract class AbstractEdge<T> {
 
     T x;
     T y;
 
-    public Edge(T n1, T n2)
+    public AbstractEdge(T n1, T n2)
     {
         this.x = n1;
         this.y = n2;
