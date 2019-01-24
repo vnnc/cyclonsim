@@ -12,21 +12,13 @@
     <groupId>sim</groupId>
     <artifactId>sim</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/jgrapht/jgrapht -->
         <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.7.3</version>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>1.2.0</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.tinyjee.jgraphx/jgraphx -->
-        <dependency>
-            <groupId>org.tinyjee.jgraphx</groupId>
-            <artifactId>jgraphx</artifactId>
-            <version>1.10.1.3</version>
-        </dependency>
-
     </dependencies>
 
 

@@ -18,7 +18,7 @@ public class AlgorithmBasic extends AbstractAlgorithm{
     @Override
     public void initGraph() {
         this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
-        this.graph.generateRandom(5,9);
+        this.graph.generateRandom(5,0.2);
     }
 
     @Override

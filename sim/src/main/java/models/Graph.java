@@ -2,7 +2,7 @@ package models;
 
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.VertexFactory;
-import org.jgrapht.generate.RandomGraphGenerator;
+import org.jgrapht.generate.GnpRandomGraphGenerator;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.lang.reflect.Constructor;
@@ -43,9 +43,9 @@ public class Graph<T1,T2> extends SimpleDirectedGraph<T1, T2> {
 
     }
 
-    public void generateRandom(int vertexAmount,int edgeAmount)
+    public void generateRandom(int vertexAmount,double edgeProba)
     {
-        RandomGraphGenerator<T1, T2> rgg = new RandomGraphGenerator<T1, T2>(vertexAmount,edgeAmount);
+        GnpRandomGraphGenerator<T1, T2> rgg = new GnpRandomGraphGenerator<T1, T2>(vertexAmount,edgeProba);
         VertexFactory<T1> factory = new VertexFactory<T1>() {
 
             private int n = 0;
