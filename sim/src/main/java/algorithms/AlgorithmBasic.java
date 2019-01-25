@@ -7,12 +7,9 @@ import models.SimpleNode;
 
 import java.util.*;
 
-public class AlgorithmBasic extends AbstractAlgorithm{
-
+public class AlgorithmBasic extends AbstractAlgorithm {
     private Graph<SimpleNode,SimpleEdge> graph;
-
     private Random rng = new Random();
-
     private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
 
     @Override
@@ -23,18 +20,13 @@ public class AlgorithmBasic extends AbstractAlgorithm{
 
     @Override
     public void shuffle(int nodeLabel,int shuffleLength) {
-        System.out.println("Graph before shuffle: "+this.graph);
-
+        System.out.println("Graph before shuffle: " + this.graph);
         SimpleNode node = this.graph.getNodeByLabel(nodeLabel);
-
         ArrayList<SimpleNode> nodeNeighbors = this.graph.getNeighborsOfNode(node);
-
-        System.out.println("Neighbors of node "+node+": "+nodeNeighbors);
-
+        System.out.println("Neighbors of node " + node + ": " + nodeNeighbors);
         int neighborsSubsetSize = (shuffleLength>nodeNeighbors.size()) ? nodeNeighbors.size() : shuffleLength;
 
-        if(nodeNeighbors.size()>0)
-        {
+        if(nodeNeighbors.size()>0) {
             ArrayList<SimpleNode> nodeNeighborsSubset = new ArrayList<SimpleNode>();
             nodeNeighborsSubset.addAll(nodeNeighbors);
             Collections.shuffle(nodeNeighborsSubset);
@@ -52,26 +44,20 @@ public class AlgorithmBasic extends AbstractAlgorithm{
             System.out.println("Chosen peer: "+peer);
 
             ArrayList<SimpleNode> subsetForPeer = new ArrayList<SimpleNode>();
-            for(SimpleNode n : nodeNeighborsSubset)
-            {
-                if(n.getLabel() == peer.getLabel())
-                {
+            for(SimpleNode n : nodeNeighborsSubset) {
+                if(n.getLabel() == peer.getLabel()) {
                     subsetForPeer.add(node);
-                }else{
+                } else {
                     subsetForPeer.add(n);
                 }
             }
 
             System.out.println("Subset sent to peer: "+subsetForPeer);
-
             ArrayList<SimpleNode> peerNeighbors = this.graph.getNeighborsOfNode(peer);
-
             System.out.println("Peer neighbors: "+peerNeighbors);
-
             int peerNeighborsSubsetSize = (shuffleLength>peerNeighbors.size()) ? peerNeighbors.size() : shuffleLength;
 
-            if(peerNeighbors.size()>0)
-            {
+            if(peerNeighbors.size()>0) {
                 ArrayList<SimpleNode> peerNeighborsSubset = new ArrayList<SimpleNode>();
                 peerNeighborsSubset.addAll(peerNeighbors);
                 Collections.shuffle(peerNeighborsSubset);
@@ -84,11 +70,9 @@ public class AlgorithmBasic extends AbstractAlgorithm{
 
                 ArrayList<SimpleNode> nodeKeptEntries = new ArrayList<SimpleNode>();
 
-                for(SimpleNode n : peerNeighborsSubset)
-                {
+                for(SimpleNode n : peerNeighborsSubset) {
                     n = this.graph.getNodeByLabel(n.getLabel());
-                    if(this.graph.getEdge(n,node)==null && !nodeNeighbors.contains(n) && n.getLabel()!=nodeLabel)
-                    {
+                    if(this.graph.getEdge(n,node)==null && !nodeNeighbors.contains(n) && n.getLabel()!=nodeLabel) {
                         nodeKeptEntries.add(n);
                         this.graph.addEdge(node,n);
                         newEdges.add(this.graph.getEdge(node,n));
@@ -96,14 +80,11 @@ public class AlgorithmBasic extends AbstractAlgorithm{
                 }
 
                 System.out.println("Remaining entries within subset from peer: "+nodeKeptEntries);
-
                 ArrayList<SimpleNode> peerKeptEntries = new ArrayList<SimpleNode>();
 
-                for(SimpleNode n : subsetForPeer)
-                {
+                for(SimpleNode n : subsetForPeer) {
                     n = this.graph.getNodeByLabel(n.getLabel());
-                    if(this.graph.getEdge(n,peer)==null && !peerNeighbors.contains(n) && n.getLabel()!=peer.getLabel())
-                    {
+                    if(this.graph.getEdge(n,peer)==null && !peerNeighbors.contains(n) && n.getLabel()!=peer.getLabel()) {
                         peerKeptEntries.add(n);
                         this.graph.addEdge(peer,n);
                         newEdges.add(this.graph.getEdge(peer,n));
@@ -111,17 +92,14 @@ public class AlgorithmBasic extends AbstractAlgorithm{
                 }
 
                 System.out.println("Remaining entries within subset from node: "+peerKeptEntries);
-
                 System.out.println("Created Edges: "+newEdges);
-
             }
         }
         System.out.println("Graph after shuffle: "+this.graph);
-
     }
 
-    public double chiSquaredCompute()
-    {
+    @Override
+    public double chiSquaredCompute() {
         int vertexAmount = this.graph.vertexSet().size();
         double expectedFreq = 1.0/vertexAmount;
 
@@ -130,21 +108,19 @@ public class AlgorithmBasic extends AbstractAlgorithm{
         {
             //System.out.println("Peer seen: "+occ);
             double freqVal = 1.0/this.chosenPeers.size();
-            if(frequencies.containsKey(occ))
-            {
+            if(frequencies.containsKey(occ)) {
                 //System.out.println("Peer in table");
                 double prev = frequencies.get(occ);
                 //System.out.println("Previous value: "+prev);
                 frequencies.put(occ,prev+freqVal);
-            }else{
+            } else {
                 frequencies.put(occ,freqVal);
             }
         }
 
         double res = 0;
 
-        for(Map.Entry<Integer,Double> entry : frequencies.entrySet())
-        {
+        for(Map.Entry<Integer,Double> entry : frequencies.entrySet()) {
             System.out.println("(k,v) = ("+entry.getKey()+","+entry.getValue()+")");
             res+= Math.pow((entry.getValue() - expectedFreq),2)/expectedFreq;
             //System.out.println("entry.getValue() - expectedFreq: "+(entry.getValue() - expectedFreq));
@@ -153,7 +129,6 @@ public class AlgorithmBasic extends AbstractAlgorithm{
         }
 
         res*= this.chosenPeers.size();
-
         return res;
     }
 

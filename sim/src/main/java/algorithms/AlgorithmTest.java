@@ -17,14 +17,16 @@ public class AlgorithmTest extends AbstractAlgorithm {
 
 	@Override
 	public void shuffle(int nodeLabel, int shuffleLength) {
-
+		
 	}
 
-	
-	public void testKhi2() {
+	@Override
+	public double chiSquaredCompute() {
 		// TODO
+		return 0.0;
 	}
-	
+
+	@Override
 	public AbstractNode nextPeer() {
 		return new EmptyNode();
 	}
