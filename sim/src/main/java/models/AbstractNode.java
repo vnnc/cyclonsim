@@ -13,6 +13,11 @@ public abstract class AbstractNode {
 		return this.label;
 	}
 
+//	public ???? getNeighbors() {
+//		//TODO
+//		return ????;
+//	}
+
 	@Override
 	public String toString() {
 		return ""+label;

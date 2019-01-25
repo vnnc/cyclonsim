@@ -76,7 +76,7 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 		return (T1) new EmptyNode();
 	}
 
-	public ArrayList<T1> getNeighborsOfNode(T1 node) {
+	public ArrayList<T1> getNeighborsOfNode(T1 node) { // XXX
 		ArrayList<T1> res = new ArrayList<T1>();
 		Set<T2> edges_set = this.edgesOf(node);
 		for(T2 edge : edges_set) {
