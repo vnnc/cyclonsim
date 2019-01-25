@@ -1,4 +1,5 @@
-import algorithms.AlgorithmBasic;
+import algorithms.*;
+import models.*;
 
 public class Main {
 
@@ -16,10 +17,10 @@ public class Main {
 	public static void main(String args[]) {
 		/*AlgorithmBasic alg = new AlgorithmBasic();
 		alg.initGraph();
-		for(int i=0;i<10;i++) {
+		for(int i=0; i<10; i++) {
 			alg.shuffle(0, 2);
 		}
-		System.out.println("Choosen peers: "+alg.getChosenPeers());
-		System.out.println("ChiSquared value: "+alg.chiSquaredCompute());*/
+		System.out.println("Choosen peers: " + alg.getChosenPeers());
+		System.out.println("ChiSquared value: " + alg.chiSquaredCompute());*/
 	}
 }
