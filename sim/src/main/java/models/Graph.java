@@ -4,7 +4,7 @@ import org.jgrapht.EdgeFactory;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.generate.GnpRandomGraphGenerator;
 import org.jgrapht.graph.SimpleDirectedGraph;
-
+import org.jgrapht.graph.DefaultDirectedGraph;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-public class Graph<T1,T2> extends SimpleDirectedGraph<T1, T2> {
+public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 
     Class vertexClass;
 

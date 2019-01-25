@@ -5,9 +5,7 @@ import models.SimpleEdge;
 import models.Graph;
 import models.SimpleNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 public class AlgorithmBasic extends AbstractAlgorithm{
 
@@ -15,10 +13,12 @@ public class AlgorithmBasic extends AbstractAlgorithm{
 
     private Random rng = new Random();
 
+    private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
+
     @Override
     public void initGraph() {
         this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
-        this.graph.generateRandom(5,0.2);
+        this.graph.generateRandom(10,0.3);
     }
 
     @Override
@@ -45,6 +45,9 @@ public class AlgorithmBasic extends AbstractAlgorithm{
 
             SimpleNode peer = nodeNeighborsSubset.get(rng.nextInt(nodeNeighborsSubset.size()));
             peer = this.graph.getNodeByLabel(peer.getLabel());
+
+            // peer added to choosenPeers for chi-squared test computations
+            this.chosenPeers.add(peer.getLabel());
 
             System.out.println("Chosen peer: "+peer);
 
@@ -115,6 +118,47 @@ public class AlgorithmBasic extends AbstractAlgorithm{
         }
         System.out.println("Graph after shuffle: "+this.graph);
 
+    }
+
+    public double chiSquaredCompute()
+    {
+        int vertexAmount = this.graph.vertexSet().size();
+        double expectedFreq = 1.0/vertexAmount;
+
+        HashMap<Integer,Double> frequencies = new HashMap<Integer,Double>();
+        for(Integer occ : this.chosenPeers)
+        {
+            //System.out.println("Peer seen: "+occ);
+            double freqVal = 1.0/this.chosenPeers.size();
+            if(frequencies.containsKey(occ))
+            {
+                //System.out.println("Peer in table");
+                double prev = frequencies.get(occ);
+                //System.out.println("Previous value: "+prev);
+                frequencies.put(occ,prev+freqVal);
+            }else{
+                frequencies.put(occ,freqVal);
+            }
+        }
+
+        double res = 0;
+
+        for(Map.Entry<Integer,Double> entry : frequencies.entrySet())
+        {
+            System.out.println("(k,v) = ("+entry.getKey()+","+entry.getValue()+")");
+            res+= Math.pow((entry.getValue() - expectedFreq),2)/expectedFreq;
+            //System.out.println("entry.getValue() - expectedFreq: "+(entry.getValue() - expectedFreq));
+            //System.out.println("(entry.getValue() - expectedFreq)²: "+Math.pow(entry.getValue() - expectedFreq,2));
+            //System.out.println("Math.pow((entry.getValue() - expectedFreq),2)/expectedFreq : "+(Math.pow((entry.getValue() - expectedFreq),2)/expectedFreq));
+        }
+
+        res*= this.chosenPeers.size();
+
+        return res;
+    }
+
+    public ArrayList<Integer> getChosenPeers() {
+        return chosenPeers;
     }
 
     @Override
