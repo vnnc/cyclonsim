@@ -16,14 +16,17 @@ import java.util.*;
 //mettre un cache (= liste de voisins) (= partialView)
 
 public class AlgorithmBasic extends AbstractAlgorithm {
+
 	private Graph<SimpleNode, SimpleEdge> graph;
 	private Random rng = new Random();
 	private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
+	private int cacheSize;
 
 	@Override
-	public void initGraph(int graphSize) {
+	public void initGraph(int graphSize,int cacheSize) {
 		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class,SimpleEdge.class);
 		this.graph.generateRandom(graphSize, 0.3);
+		this.cacheSize = cacheSize;
 	}
 
 	@Override
@@ -86,6 +89,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 				System.out.println("Subset of peer neighbors: " + peerNeighborsSubset);
 
 				ArrayList<SimpleEdge> newEdges = new ArrayList<SimpleEdge>();
+				ArrayList<SimpleEdge> removedEdges = new ArrayList<SimpleEdge>();
 				ArrayList<SimpleNode> nodeKeptEntries = new ArrayList<SimpleNode>();
 
 				for (SimpleNode n : peerNeighborsSubset) {
@@ -93,9 +97,25 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 					if(this.graph.getEdge(n, node) == null
 					&& !nodeNeighbors.contains(n)
 					&& n.getLabel() != nodeLabel) {
-						nodeKeptEntries.add(n);
-						this.graph.addEdge(node,n);
-						newEdges.add(this.graph.getEdge(node,n));
+						if(nodeNeighbors.size() < cacheSize){
+							nodeKeptEntries.add(n);
+							this.graph.addEdge(node,n);
+							newEdges.add(this.graph.getEdge(node,n));
+							nodeNeighbors.add(n);
+						}else{
+							if(subsetForPeer.get(subsetForPeer.size()-1) != node)
+							{
+								SimpleNode removeTarget = subsetForPeer.get(subsetForPeer.size()-1);
+								removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
+								SimpleEdge toRemove = this.graph.getEdge(node,removeTarget);
+								this.graph.removeEdge(toRemove);
+								removedEdges.add(toRemove);
+								nodeKeptEntries.add(n);
+								this.graph.addEdge(node,n);
+								newEdges.add(this.graph.getEdge(node,n));
+								nodeNeighbors.add(n);
+							}
+						}
 					}
 				}
 
@@ -107,14 +127,28 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 					if (this.graph.getEdge(n, peer) == null
 					&& !peerNeighbors.contains(n)
 					&& n.getLabel() != peer.getLabel()) {
-						peerKeptEntries.add(n);
-						this.graph.addEdge(peer,n);
-						newEdges.add(this.graph.getEdge(peer,n));
+						if(peerNeighbors.size()<cacheSize){
+							peerKeptEntries.add(n);
+							this.graph.addEdge(peer,n);
+							newEdges.add(this.graph.getEdge(peer,n));
+							peerNeighbors.add(n);
+						}else{
+							SimpleNode removeTarget = peerNeighborsSubset.get(peerNeighborsSubset.size()-1);
+							removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
+							SimpleEdge toRemove = this.graph.getEdge(peer,removeTarget);
+							this.graph.removeEdge(toRemove);
+							removedEdges.add(toRemove);
+							peerKeptEntries.add(n);
+							this.graph.addEdge(peer,n);
+							newEdges.add(this.graph.getEdge(peer,n));
+							peerNeighbors.add(n);
+						}
 					}
 				}
 
 				System.out.println("Remaining entries within subset from node: " + peerKeptEntries);
 				System.out.println("Created Edges: " + newEdges);
+				System.out.println("Removed Edges: " + removedEdges);
 			}
 		}
 		System.out.println("Graph after shuffle: " + this.graph);
