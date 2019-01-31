@@ -15,28 +15,29 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	private Random rng = new Random();
 	private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
 	private int cacheSize;
+	private int shuffleLength;
 
 	@Override
-	public void initRandomGraph(int graphSize,int cacheSize) {
+	public void initRandomGraph(int graphSize,int cacheSize,int shuffleLength) {
 		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class,SimpleEdge.class);
 		this.graph.generateRandom(graphSize, 0.3);
 		this.cacheSize = cacheSize;
+		this.shuffleLength = shuffleLength;
 	}
 
 	@Override
-	public void initGraphFromCSV(String path,int cacheSize)
+	public void initGraphFromCSV(String path,int cacheSize,int shuffleLength)
     {
 	    this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
 	    this.graph.importFromCSV(path);
 	    this.cacheSize = cacheSize;
+	    this.shuffleLength = shuffleLength;
     }
 
 	@Override
-	public void round() { //XXX c'est de la merde je pense
+	public void shuffleAll() {
 		for(int i=0; i<this.graph.vertexSet().size(); i++) {
-			for(int j=0; j<this.graph.vertexSet().size(); j++) {
-				this.shuffle(j, 2);
-			}
+			this.shuffle(i);
 		}
 	}
 
@@ -61,7 +62,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
     }
 
 	@Override //XXX y a-t-il vraiment besoin que ce truc soit abstrait puis overridé ?
-	public void shuffle(int nodeLabel, int shuffleLength) {
+	public void shuffle(int nodeLabel) {
 		/* Each peer P repeatedly initiates a neighbor exchange operation, known
 		as shuffle, by executing the following six steps */
 		System.out.println("Graph before shuffle: " + this.graph);
