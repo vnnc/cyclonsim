@@ -1,9 +1,7 @@
 package algorithms;
 
-import models.AbstractNode;
-import models.SimpleEdge;
-import models.Graph;
-import models.SimpleNode;
+import models.*;
+import org.jgrapht.io.VertexProvider;
 
 import java.util.*;
 
@@ -19,11 +17,19 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	private int cacheSize;
 
 	@Override
-	public void initGraph(int graphSize,int cacheSize) {
+	public void initRandomGraph(int graphSize,int cacheSize) {
 		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class,SimpleEdge.class);
 		this.graph.generateRandom(graphSize, 0.3);
 		this.cacheSize = cacheSize;
 	}
+
+	@Override
+	public void initGraphFromCSV(String path,int cacheSize)
+    {
+	    this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
+	    this.graph.importFromCSV(path);
+	    this.cacheSize = cacheSize;
+    }
 
 	@Override
 	public void round() { //XXX c'est de la merde je pense
@@ -33,6 +39,26 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 			}
 		}
 	}
+
+    public AbstractNode getPeer(Graph g,SimpleNode n){
+	    ArrayList<SimpleNode> neighbors = g.getNeighborsOfNode(n);
+	    if(neighbors.size()>0){
+	        Random r = new Random();
+	        int index = r.nextInt(neighbors.size());
+	        return neighbors.get(index);
+        }else{
+	        return new EmptyNode();
+        }
+    }
+
+    private ArrayList<SimpleNode> getRandomSubset(ArrayList<SimpleNode> nodes,int size)
+    {
+        ArrayList<SimpleNode> subset = new ArrayList<SimpleNode>();
+        subset.addAll(nodes);
+        Collections.shuffle(subset);
+        subset = new ArrayList<SimpleNode>(subset.subList(0,size));
+        return subset;
+    }
 
 	@Override //XXX y a-t-il vraiment besoin que ce truc soit abstrait puis overridé ?
 	public void shuffle(int nodeLabel, int shuffleLength) {
@@ -51,13 +77,8 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 			System.out.println("[Error during shuffle] Graph: " + this.graph);
 			return;
 		}
-		ArrayList<SimpleNode> nodeNeighborsSubset = new ArrayList<SimpleNode>();
-		nodeNeighborsSubset.addAll(nodeNeighbors);
-		Collections.shuffle(nodeNeighborsSubset);
-		System.out.println("DEBUG: nodeNeighborsSubset: " + nodeNeighborsSubset);
-		
-		nodeNeighborsSubset = new ArrayList<SimpleNode>(nodeNeighborsSubset.subList(0, neighborsSubsetSize));
-		System.out.println("Subset of neighbors: " + nodeNeighborsSubset);
+
+		ArrayList<SimpleNode> nodeNeighborsSubset = this.getRandomSubset(nodeNeighbors,neighborsSubsetSize);
 
 		SimpleNode peer = nodeNeighborsSubset.get(rng.nextInt(nodeNeighborsSubset.size()));
 		peer = this.graph.getNodeByLabel(peer.getLabel());
@@ -85,17 +106,17 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 			System.out.println("[Error during shuffle] Graph: " + this.graph);
 			return;
 		}
-		ArrayList<SimpleNode> peerNeighborsSubset = new ArrayList<SimpleNode>();
-		peerNeighborsSubset.addAll(peerNeighbors);
-		Collections.shuffle(peerNeighborsSubset);
-		System.out.println("DEBUG: peerNeighborsSubset: " + peerNeighborsSubset);
-		peerNeighborsSubset = new ArrayList<SimpleNode>(peerNeighborsSubset.subList(0, peerNeighborsSubsetSize));
-		System.out.println("Subset of peer neighbors: " + peerNeighborsSubset);
+
+        ArrayList<SimpleNode> peerNeighborsSubset = this.getRandomSubset(peerNeighbors,peerNeighborsSubsetSize);
 
 		/* 5. Discard entries pointing to P, and entries that are already in P’s cache. */
 		ArrayList<SimpleEdge> newEdges = new ArrayList<SimpleEdge>();
 		ArrayList<SimpleEdge> removedEdges = new ArrayList<SimpleEdge>();
 		ArrayList<SimpleNode> nodeKeptEntries = new ArrayList<SimpleNode>();
+
+		/* 6. Update P’s cache to include all remaining entries, by firstly
+		using empty cache slots (if any), and secondly replacing entries
+		among the ones originally sent to Q. */
 		for (SimpleNode n : peerNeighborsSubset) {
 			n = this.graph.getNodeByLabel(n.getLabel());
 			if(this.graph.getEdge(n, node) == null
@@ -122,9 +143,9 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 		System.out.println("Remaining entries within subset from peer: " + nodeKeptEntries);
 		ArrayList<SimpleNode> peerKeptEntries = new ArrayList<SimpleNode>();
 
-		/* 6. Update P’s cache to include all remaining entries, by firstly
+		/* 6. Update Q’s cache to include all remaining entries, by firstly
 		using empty cache slots (if any), and secondly replacing entries
-		among the ones originally sent to Q. */
+		among the ones originally sent to P. */
 		for (SimpleNode n : subsetForPeer) {
 			n = this.graph.getNodeByLabel(n.getLabel());
 			if (this.graph.getEdge(n, peer) == null
@@ -143,6 +164,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 				peerNeighbors.add(n);
 			}
 		}
+
 		System.out.println("Remaining entries within subset from node: " + peerKeptEntries);
 		System.out.println("Created Edges: " + newEdges);
 		System.out.println("Removed Edges: " + removedEdges);

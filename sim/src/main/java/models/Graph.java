@@ -5,11 +5,15 @@ import org.jgrapht.VertexFactory;
 import org.jgrapht.generate.GnpRandomGraphGenerator;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.io.*;
+
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
@@ -39,6 +43,7 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 		this.edgeClass = edgeClass;
 		this.vertexClass = vertexClass;
 	}
+
 
 	public void generateRandom(int vertexAmount,double edgeProba) {
 		GnpRandomGraphGenerator<T1, T2> rgg = new GnpRandomGraphGenerator<T1, T2>(vertexAmount,edgeProba);
@@ -86,5 +91,75 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 			}
 		}
 		return res;
+	}
+
+	public void importFromCSV(String path)
+	{
+		final Class vertexClass = this.vertexClass;
+		final Class edgeClass = this.edgeClass;
+		VertexProvider<T1> vprov = new VertexProvider<T1>()
+		{
+			@Override
+			public T1 buildVertex(String label, Map<String, Attribute> attributes)
+			{
+				try {
+					return (T1) vertexClass.getDeclaredConstructor(int.class).newInstance(Integer.parseInt(label));
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+
+		EdgeProvider<T1,T2> eprov = new EdgeProvider<T1, T2>() {
+			@Override
+			public T2 buildEdge(T1 t1, T1 v1, String s, Map<String, Attribute> map) {
+				try {
+					return (T2) edgeClass.getDeclaredConstructor(Object.class,Object.class).newInstance(t1,v1);
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+
+		CSVImporter<T1,T2> importer = new CSVImporter<T1,T2>(vprov,eprov);
+		try {
+			importer.importGraph(this,new File(path));
+		} catch (ImportException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public String exportToCSV(String path)
+	{
+		ComponentNameProvider<T1> nprov = new ComponentNameProvider<T1>() {
+			@Override
+			public String getName(T1 t1) {
+				int label = ((AbstractNode) t1).getLabel();
+				return Integer.toString(label);
+			}
+		};
+
+		CSVExporter<T1,T2> exporter = new CSVExporter<T1, T2>();
+		exporter.setVertexIDProvider(nprov);
+		try {
+			exporter.exportGraph(this,new File(path));
+		} catch (ExportException e) {
+			e.printStackTrace();
+		}
+		return path;
 	}
 }
