@@ -12,17 +12,16 @@ import models.*;
 public class Main {
 
 	public static void main(String args[]) {
-		/*AlgorithmBasic alg = new AlgorithmBasic();
-		final int GRAPH_SIZE = 10;
+
+		AlgorithmBasic algo = new AlgorithmBasic();
 		final int CACHE_SIZE = 3;
-		
-		alg.initRandomGraph(GRAPH_SIZE,CACHE_SIZE);
-		alg.round();
-		System.out.println("Choosen peers: " + alg.getChosenPeers());
-		Khi2 khi2 = new Khi2(alg, GRAPH_SIZE);
-		System.out.println("ChiSquared value: " + khi2.runTest());*/
-		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
-		g.importFromCSV("testgraph1.csv");
-		System.out.println(g);
+		final int SHUFFLE_LENGTH = 2;
+
+		algo.initGraphFromCSV("testgraph1.csv",CACHE_SIZE,SHUFFLE_LENGTH);
+
+		ChiSquaredTest t = new ChiSquaredTest(algo);
+
+		System.out.println("KhiSquared Value: " + t.runTest(0,100,10));
+
 	}
 }

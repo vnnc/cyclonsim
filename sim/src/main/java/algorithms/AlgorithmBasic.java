@@ -1,7 +1,6 @@
 package algorithms;
 
 import models.*;
-import org.jgrapht.io.VertexProvider;
 
 import java.util.*;
 
@@ -41,8 +40,9 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 		}
 	}
 
-    public AbstractNode getPeer(Graph g,SimpleNode n){
-	    ArrayList<SimpleNode> neighbors = g.getNeighborsOfNode(n);
+	@Override
+    public AbstractNode nextPeer(Object n){
+	    ArrayList<SimpleNode> neighbors = this.graph.getNeighborsOfNode((SimpleNode) n);
 	    if(neighbors.size()>0){
 	        Random r = new Random();
 	        int index = r.nextInt(neighbors.size());
@@ -179,8 +179,9 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	}
 
 	@Override
-	public AbstractNode nextPeer() { // TODO
-		return null;
+	public Graph getGraph()
+	{
+		return this.graph;
 	}
 }
 

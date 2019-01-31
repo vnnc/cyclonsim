@@ -3,23 +3,35 @@ import models.*;
 
 import java.util.*;
 
-public class Khi2 {
+public class ChiSquaredTest {
 
-	private AbstractAlgorithm algo;
-	private int graphSize;
+	private Graph graph;
+	private AbstractAlgorithm algorithm;
 
-	public Khi2 (AbstractAlgorithm algo, int graphSize) {
-		this.algo = algo;
-		this.graphSize = graphSize;
+	public ChiSquaredTest(AbstractAlgorithm alg) {
+		this.algorithm = alg;
+		this.graph = this.algorithm.getGraph();
 	}
 
-	public double runTest() {
-		double expectedFreq = 1.0/this.graphSize;
+
+	public double runTest(int nodeLabel,int peerAmount,int shuffleInterval) {
+
+		int graphSize = this.graph.vertexSet().size();
+
+		double expectedFreq = 1.0/graphSize;
+
+		ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
+
+		for(int i=0;i<peerAmount;i++)
+		{
+			this.algorithm.multiShuffleAll(shuffleInterval);
+			chosenPeers.add(this.algorithm.nextPeer(this.graph.getNodeByLabel(nodeLabel)).getLabel());
+		}
 
 		HashMap<Integer,Double> frequencies = new HashMap<Integer, Double>();
-		for(Integer occ : this.algo.getChosenPeers()) {
+		for(Integer occ : chosenPeers) {
 			//System.out.println("Peer seen: "+occ);
-			double freqVal = 1.0/this.algo.getChosenPeers().size();
+			double freqVal = 1.0/chosenPeers.size();
 			if (frequencies.containsKey(occ)) {
 				//System.out.println("Peer in table");
 				double prev = frequencies.get(occ);
@@ -40,7 +52,7 @@ public class Khi2 {
 			//System.out.println("Math.pow((entry.getValue() - expectedFreq),2)/expectedFreq : "+(Math.pow((entry.getValue() - expectedFreq),2)/expectedFreq));
 		}
 
-		res *= this.algo.getChosenPeers().size();
+		res *= chosenPeers.size();
 		return res;
 	}
 }

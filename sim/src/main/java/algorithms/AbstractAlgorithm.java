@@ -6,6 +6,7 @@ import models.Graph;
 import java.util.ArrayList;
 
 public abstract class AbstractAlgorithm {
+
 	public abstract void initRandomGraph(int graphSize,int cacheSize,int shuffleLength);
 
 	public abstract void initGraphFromCSV(String path,int cacheSize,int shuffleLength);
@@ -14,9 +15,11 @@ public abstract class AbstractAlgorithm {
 
 	public abstract void shuffleAll();
 
-	public abstract AbstractNode nextPeer();
+	public abstract AbstractNode nextPeer(Object n);
 	
 	public abstract ArrayList<Integer> getChosenPeers();
+
+	public abstract Graph getGraph();
 
 	public void multiShuffleAll(int amount)
 	{
