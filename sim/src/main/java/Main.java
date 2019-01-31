@@ -6,21 +6,10 @@ import models.*;
 // TODO faire le test plein de fois pour avoir des résultats statistiquement valables
 
 // [divers algos] -> interface getNextPeer() -> le khi² qui fait 1000× "appeler getNextPeer() 1000×" et en calcule la moyenne
-// en fait osef de la moyenne, cf intervalle de confiance : on arrête quand (la racine de la variance / nombre de fois qu'on a fait le test) est faible
-// faible = alpha qui dépend de la probabilité que ce soit juste qu'on se fixe
+// en fait osef de la moyenne, il faut l'intervalle de confiance : on arrête quand (la racine de la variance / nombre de fois qu'on a fait le test) est faible
+// faible = alpha qui dépend de la probabilité que ce soit juste, qu'on se fixe
 
 public class Main {
-
-	public static void structureTest() {
-		/*System.out.println("Running");
-		Graph<NodeTest> G = new Graph<NodeTest>(NodeTest.class);
-
-		G.generateRandom(5,8);
-
-		System.out.println("Age of node 0: "+G.getNodeByLabel(0).getAge());
-		System.out.println("Neighbors of node 0: "+G.getNeighborsOfNode(G.getNodeByLabel(0)));
-		System.out.println(G);*/
-	}
 
 	public static void main(String args[]) {
 		AlgorithmBasic alg = new AlgorithmBasic();
