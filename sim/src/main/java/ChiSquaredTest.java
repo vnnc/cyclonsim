@@ -35,7 +35,7 @@ public class ChiSquaredTest {
 	 *                        valeur qui suit la loi de distribution a 98% de
 	 *                        chance de se trouver dans l'intervalle de confiance
 	 */
-	public void runFullTest(int nodeLabel, int peerAmount, int shuffleInterval,
+	public boolean runFullTest(int nodeLabel, int peerAmount, int shuffleInterval,
 	                        int cacheSize, int shuffleLength, double confidenceLevel) {
 		// Liste contenant les valeurs du test X² calculées
 		ArrayList<Double> values = new ArrayList<Double>();
@@ -56,7 +56,7 @@ public class ChiSquaredTest {
 		do {
 			n++;
 			this.algorithm.initGraph(initialGraph, cacheSize, shuffleLength);
-			values.add(runComputation(nodeLabel, peerAmount, shuffleInterval));
+			values.add(runComputation(nodeLabel, peerAmount, shuffleInterval)); //TODO threads
 			standardErrors.add(Math.sqrt(computeVariance(values)/n));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
 		} while(standardErrors.get(n-1) > limitValue);
@@ -79,7 +79,8 @@ public class ChiSquaredTest {
 
 		Utilities.printInfo("Expected critical value for ChiSquared distribution: " + criticalValue);
 		Utilities.printInfo("Computed confidence interval: "
-		                    + "[" + leftBound + " , " + rightBound + "]");
+		                    + "[" + leftBound + ", " + rightBound + "]");
+		return (rightBound < criticalValue);
 	}
 
 	private double computeMean(ArrayList<Double> values){
@@ -112,7 +113,7 @@ public class ChiSquaredTest {
 
 		for(int i=0; i<peerAmount; i++) {
 			this.algorithm.multiShuffleAll(shuffleInterval);
-			AbstractNode nextPeer = this.algorithm.nextPeer(this.algorithm.getGraph().getNodeByLabel(nodeLabel));
+			AbstractNode nextPeer = this.algorithm.nextPeer(nodeLabel);
 			chosenPeers.add(nextPeer.getLabel());
 		}
 

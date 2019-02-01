@@ -9,7 +9,7 @@ import java.util.*;
 // - partialView == peerNeighbors ?
 // - etc.
 
-public class AlgorithmBasic extends AbstractAlgorithm {
+public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	private Graph<SimpleNode, SimpleEdge> graph;
 	private Random rng = new Random();
@@ -20,9 +20,12 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 
 	// l dans l'article cyclon
 	private int shuffleLength;
+	
+	public static int nbEchanges = 0;
+	public static int nbEchecs = 0;
 
 	@Override
-	public void initRandomGraph(int graphSize,int cacheSize,int shuffleLength) {
+	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength) {
 		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class,SimpleEdge.class);
 		this.graph.generateRandom(graphSize, 0.3);
 		this.cacheSize = cacheSize;
@@ -52,7 +55,8 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	}
 
 	@Override
-	public AbstractNode nextPeer(Object n){
+	public AbstractNode nextPeer(Integer nodeLabel){
+		Object n = this.getGraph().getNodeByLabel(nodeLabel);
 		ArrayList<SimpleNode> neighbors = this.graph.getNeighborsOfNode((SimpleNode) n);
 		if(neighbors.size() > 0) {
 			Random r = new Random();
@@ -71,7 +75,6 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 		return subset;
 	}
 
-	@Override //XXX y a-t-il vraiment besoin que ce truc soit abstrait puis overridé ?
 	public void shuffle(int nodePLabel) {
 		/* Each peer P repeatedly initiates a neighbor exchange operation, known
 		as shuffle, by executing the following six steps */
@@ -138,8 +141,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 					newEdges.add(this.graph.getEdge(nodeP,n));
 					nodePNeighbors.add(n);
 
-				}
-				else if(subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
+				} else if(subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
 					SimpleNode removeTarget = subsetForPeerQ.get(subsetForPeerQ.size()-1);
 					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
 					SimpleEdge toRemove = this.graph.getEdge(nodeP,removeTarget);
@@ -178,15 +180,21 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 				peerQNeighbors.add(n);
 			}
 		}
-
-		Utilities.printDebug("Remaining entries within subset from node P: " + peerQKeptEntries);
-		Utilities.printDebug("Created Edges: " + newEdges);
-		Utilities.printDebug("Removed Edges: " + removedEdges);
 		
-		Utilities.printDebug("Graph after shuffle: " + this.graph);
+		if (newEdges.isEmpty() || removedEdges.isEmpty()) {
+			Utilities.printDebug("Nothing happened");
+			this.nbEchecs++;
+		} else {
+			Utilities.printDebug("Remaining entries within subset from node P: " + peerQKeptEntries);
+			Utilities.printDebug("Created Edges: " + newEdges);
+			Utilities.printDebug("Removed Edges: " + removedEdges);
+			
+			Utilities.printDebug("Graph after shuffle: " + this.graph);
+			this.nbEchanges++;
+		}
 	}
 
-	@Override
+//	@Override
 	public ArrayList<Integer> getChosenPeers() {
 		return this.chosenPeers;
 	}

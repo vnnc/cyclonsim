@@ -46,7 +46,7 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 
 
 	public void generateRandom(int vertexAmount,double edgeProba) {
-		GnpRandomGraphGenerator<T1, T2> rgg = new GnpRandomGraphGenerator<T1, T2>(vertexAmount,edgeProba);
+		GnpRandomGraphGenerator<T1, T2> rgg = new GnpRandomGraphGenerator<T1, T2>(vertexAmount, edgeProba);
 		VertexFactory<T1> factory = new VertexFactory<T1>() {
 			private int n = 0;
 			public T1 createVertex() {
