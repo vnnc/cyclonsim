@@ -3,6 +3,7 @@ package algorithms;
 import models.*;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.TDistribution;
 import utilities.Utilities;
 import java.util.*;
 
@@ -36,17 +37,23 @@ public class ChiSquaredTest {
 		// Liste contenant les valeurs du test X² calculées
 		ArrayList<Double> values = new ArrayList<Double>();
 
-		// Liste contenant les valeurs de déviation des valeurs contenues dans "values" => sqrt(variance/n)
-		ArrayList<Double> deviations = new ArrayList<Double>();
+		// Liste contenant les valeurs d'erreur type des valeurs contenues dans "values" => sqrt(variance/n)
+		ArrayList<Double> standardErrors = new ArrayList<Double>();
+
+		ChiSquaredDistribution csd = new ChiSquaredDistribution(this.initialGraph.vertexSet().size()-1);
+
+		TDistribution td = new TDistribution(this.initialGraph.vertexSet().size()-1);
+		double alpha = (1-confidenceLevel)/2;
+		double limitValue = -td.inverseCumulativeProbability(alpha);
 
 		int n = 0;
 		do{
 			n++;
 			this.algorithm.initGraph(initialGraph,cacheSize,shuffleLength);
 			values.add(runComputation(nodeLabel,peerAmount,shuffleInterval));
-			deviations.add(Math.sqrt(computeVariance(values)/n));
-			Utilities.printInfo("Computed deviation: "+deviations.get(n-1));
-		}while(deviations.get(n-1) > confidenceLevel);
+			standardErrors.add(Math.sqrt(computeVariance(values)/n));
+			Utilities.printInfo("Computed standard error: "+standardErrors.get(n-1));
+		}while(standardErrors.get(n-1) > limitValue);
 
 		// Moyenne des valeurs du test X² calculées
 		double chiMean = computeMean(values);
@@ -57,20 +64,18 @@ public class ChiSquaredTest {
 
 		Utilities.printInfo("Minimum ChiSquared value: "+Collections.min(values));
 
-		ChiSquaredDistribution csd = new ChiSquaredDistribution(this.initialGraph.vertexSet().size()-1);
+		// Borne supérieure de l'intervalle de confiance selon les valeurs calculées
+		double rightBound = chiMean + limitValue*standardErrors.get(n-1);
+
+		// Borne inférieure de l'intervalle de confiance selon les valeurs calculées
+		double leftBound = chiMean - limitValue*standardErrors.get(n-1);
 
 		// Valeur critique selon la distribution X²
 		double criticalValue = csd.inverseCumulativeProbability(confidenceLevel);
 
-		// Borne supérieure de l'intervalle de confiance
-		double rightBound = csd.inverseCumulativeProbability(1-((1-confidenceLevel)/2));
+		Utilities.printInfo("Expected critical value for ChiSquared distribution : "+criticalValue);
 
-		// Borne inférieure de l'intervalle de confiance
-		double leftBound = csd.inverseCumulativeProbability((1-confidenceLevel)/2);
-
-		Utilities.printInfo("Critical value of ChiSquared distribution : "+criticalValue);
-
-		Utilities.printInfo( "Confidence interval: "+"["+leftBound+" , "+rightBound+"]");
+		Utilities.printInfo("Computed confidence interval: "+"["+leftBound+" , "+rightBound+"]");
 	}
 
 	private double computeMean(ArrayList<Double> values){

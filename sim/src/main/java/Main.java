@@ -23,7 +23,7 @@ public class Main {
 
 		ChiSquaredTest test = new ChiSquaredTest(algo,g);
 
-		test.runFullTest(0,100,5,CACHE_SIZE,SHUFFLE_LENGTH,0.95);
+		test.runFullTest(0,150,20,CACHE_SIZE,SHUFFLE_LENGTH,0.98);
 
 	}
 }
