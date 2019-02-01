@@ -21,7 +21,6 @@ public class ChiSquaredTest {
 	}
 
 	/**
-	 *
 	 * @param nodeLabel label (étiquette) du noeud du graphe qui est observé dans le test
 	 * @param peerAmount nombre d'appels de nextPeer par calcul de valeur du test X²
 	 * @see AbstractAlgorithm#nextPeer(Object)
@@ -110,7 +109,7 @@ public class ChiSquaredTest {
 
 		for(int i=0; i<peerAmount; i++) {
 			this.algorithm.multiShuffleAll(shuffleInterval);
-			chosenPeers.add(this.algorithm.nextPeer(this.algorithm.getGraph().getNodeByLabel(nodeLabel)).getLabel());
+			chosenPeers.add(this.algorithm.nextPeer(this.algorithm.getGraph().getNodeByLabel(nodeLabel)).getLabel()); //XXX quoi??
 		}
 
 		HashMap<Integer,Double> frequencies = new HashMap<Integer, Double>();
@@ -127,7 +126,7 @@ public class ChiSquaredTest {
 		double res = 0;
 		for (Map.Entry<Integer, Double> entry : frequencies.entrySet()) {
 			Utilities.printDebug("(k,v) = (" + entry.getKey() + "," + entry.getValue() + ")");
-			res+= Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
+			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
 		}
 		res *= chosenPeers.size();
 		return res;

@@ -1,6 +1,5 @@
 import algorithms.*;
 import models.*;
-//import ChiSquaredTest;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 // TODO oh non veut-il qu'on fasse le graphe nous-mêmes ??
