@@ -7,7 +7,6 @@ import java.util.*;
 
 //TODO utiliser les mêmes termes qu'eux :
 // - partialView == peerNeighbors ?
-// - P et Q comme dans l'article
 // - etc.
 
 public class AlgorithmBasic extends AbstractAlgorithm {
@@ -69,109 +68,109 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	}
 
 	@Override //XXX y a-t-il vraiment besoin que ce truc soit abstrait puis overridé ?
-	public void shuffle(int nodeLabel) {
+	public void shuffle(int nodePLabel) {
 		/* Each peer P repeatedly initiates a neighbor exchange operation, known
 		as shuffle, by executing the following six steps */
 
 		Utilities.printDebug("Graph before shuffle: " + this.graph);
-		SimpleNode node = this.graph.getNodeByLabel(nodeLabel);
-		ArrayList<SimpleNode> nodeNeighbors = this.graph.getNeighborsOfNode(node);
-		Utilities.printDebug("Neighbors of node " + node + ": " + nodeNeighbors);
+		SimpleNode nodeP = this.graph.getNodeByLabel(nodePLabel);
+		ArrayList<SimpleNode> nodePNeighbors = this.graph.getNeighborsOfNode(nodeP);
+		Utilities.printDebug("Neighbors of node P " + nodeP + ": " + nodePNeighbors);
 		
-		/* 1. Select a random subset of l neighbors (1 ≤ l ≤ c) from P’s own cache,
+		/* 1. Select a random subset of l neighbors (1 ≤ l ≤ c) from P's own cache,
 		and a random peer, Q, within this subset, where l is a system parameter,
 		called shuffle length. */
-		int neighborsSubsetSize = Math.min(shuffleLength, nodeNeighbors.size());
-		if(nodeNeighbors.size() <= 0) {
-			Utilities.printDebug("[Error during shuffle] Graph: " + this.graph);
+		int pNeighborsSubsetSize = Math.min(shuffleLength, nodePNeighbors.size());
+		if(nodePNeighbors.size() <= 0) {
+			Utilities.printDebug("[Error during shuffle, P has no neighbor] Graph: " + this.graph);
 			return;
 		}
 
-		ArrayList<SimpleNode> nodeNeighborsSubset = this.getRandomSubset(nodeNeighbors,neighborsSubsetSize);
+		ArrayList<SimpleNode> nodePNeighborsSubset = this.getRandomSubset(nodePNeighbors, pNeighborsSubsetSize);
 
-		SimpleNode peer = nodeNeighborsSubset.get(rng.nextInt(nodeNeighborsSubset.size()));
-		peer = this.graph.getNodeByLabel(peer.getLabel());
+		SimpleNode peerQ = nodePNeighborsSubset.get(rng.nextInt(nodePNeighborsSubset.size()));
+		peerQ = this.graph.getNodeByLabel(peerQ.getLabel()); // XXX c'est quoi ça ?? 🤔
 
 		// peer added to choosenPeers for chi-squared test computations
-		this.chosenPeers.add(peer.getLabel());
-		Utilities.printDebug("Chosen peer: " + peer);
+		this.chosenPeers.add(peerQ.getLabel());
+		Utilities.printDebug("Chosen peer Q: " + peerQ);
 		
 		/* 3. Send the updated subset to Q. */
-		ArrayList<SimpleNode> subsetForPeer = new ArrayList<SimpleNode>();
-		for(SimpleNode n : nodeNeighborsSubset) {
-			if(n.getLabel() == peer.getLabel()) {
-				subsetForPeer.add(node);
+		ArrayList<SimpleNode> subsetForPeerQ = new ArrayList<SimpleNode>();
+		for(SimpleNode n : nodePNeighborsSubset) {
+			if(n.getLabel() == peerQ.getLabel()) {
+				subsetForPeerQ.add(nodeP);
 			} else {
-				subsetForPeer.add(n);
+				subsetForPeerQ.add(n);
 			}
 		}
-		Utilities.printDebug("Subset sent to peer: " + subsetForPeer);
+		Utilities.printDebug("Subset sent to peer: " + subsetForPeerQ);
 		
-		/* 4. Receive from Q a subset of no more than l of Q’s neighbors. */
-		ArrayList<SimpleNode> peerNeighbors = this.graph.getNeighborsOfNode(peer);
-		Utilities.printDebug("Peer neighbors: " + peerNeighbors);
-		int peerNeighborsSubsetSize = Math.min(shuffleLength, peerNeighbors.size());
-		if (peerNeighbors.size() <= 0) {
-			Utilities.printDebug("[Error during shuffle] Graph: " + this.graph);
+		/* 4. Receive from Q a subset of no more than l of Q's neighbors. */
+		ArrayList<SimpleNode> peerQNeighbors = this.graph.getNeighborsOfNode(peerQ);
+		Utilities.printDebug("Peer Q neighbors: " + peerQNeighbors);
+		int peerQNeighborsSubsetSize = Math.min(shuffleLength, peerQNeighbors.size());
+		if (peerQNeighbors.size() <= 0) {
+			Utilities.printDebug("[Error during shuffle, Q has no neighbor] Graph: " + this.graph);
 			return;
 		}
 
-		ArrayList<SimpleNode> peerNeighborsSubset = this.getRandomSubset(peerNeighbors, peerNeighborsSubsetSize);
+		ArrayList<SimpleNode> peerQNeighborsSubset = this.getRandomSubset(peerQNeighbors, peerQNeighborsSubsetSize);
 
-		/* 5. Discard entries pointing to P, and entries that are already in P’s cache. */
+		/* 5. Discard entries pointing to P, and entries that are already in P's cache. */
 		ArrayList<SimpleEdge> newEdges = new ArrayList<SimpleEdge>();
 		ArrayList<SimpleEdge> removedEdges = new ArrayList<SimpleEdge>();
-		ArrayList<SimpleNode> nodeKeptEntries = new ArrayList<SimpleNode>();
+		ArrayList<SimpleNode> nodePKeptEntries = new ArrayList<SimpleNode>(); // XXX seulement pour le débug ?
 
-		for (SimpleNode n : peerNeighborsSubset) {
+		for (SimpleNode n : peerQNeighborsSubset) {
 			n = this.graph.getNodeByLabel(n.getLabel());
-			if(this.graph.getEdge(n, node) == null
-			&& !nodeNeighbors.contains(n)
-			&& n.getLabel() != nodeLabel) {
-				if (nodeNeighbors.size() > cacheSize
-				&& subsetForPeer.get(subsetForPeer.size()-1) != node) {
-					SimpleNode removeTarget = subsetForPeer.get(subsetForPeer.size()-1);
-					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
-					SimpleEdge toRemove = this.graph.getEdge(node, removeTarget);
+			if(this.graph.getEdge(n, nodeP) == null
+			&& !nodePNeighbors.contains(n)
+			&& n.getLabel() != nodePLabel) {
+				if (nodePNeighbors.size() > cacheSize
+				&& subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
+					SimpleNode removeTarget = subsetForPeerQ.get(subsetForPeerQ.size()-1);
+					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel()); // XXX c'est quoi ça ?? 🤔
+					SimpleEdge toRemove = this.graph.getEdge(nodeP, removeTarget);
 					this.graph.removeEdge(toRemove);
 					removedEdges.add(toRemove);
 				}
-				if (nodeNeighbors.size() < cacheSize
-				|| subsetForPeer.get(subsetForPeer.size()-1) != node) {
-					nodeKeptEntries.add(n);
-					this.graph.addEdge(node, n);
-					newEdges.add(this.graph.getEdge(node, n));
-					nodeNeighbors.add(n);
+				if (nodePNeighbors.size() < cacheSize
+				|| subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
+					nodePKeptEntries.add(n); // XXX seulement pour le débug ?
+					this.graph.addEdge(nodeP, n);
+					newEdges.add(this.graph.getEdge(nodeP, n));
+					nodePNeighbors.add(n);
 				}
 			}
 		}
+		Utilities.printDebug("Remaining entries within subset from peer Q: " + nodePKeptEntries); // XXX seulement pour le débug ?
+		
+		ArrayList<SimpleNode> peerQKeptEntries = new ArrayList<SimpleNode>(); // XXX seulement pour le débug ?
 
-		Utilities.printDebug("Remaining entries within subset from peer: " + nodeKeptEntries);
-		ArrayList<SimpleNode> peerKeptEntries = new ArrayList<SimpleNode>();
-
-		/* 6. Update P’s cache to include all remaining entries, by firstly
+		/* 6. Update P's cache to include all remaining entries, by firstly
 		using empty cache slots (if any), and secondly replacing entries
 		among the ones originally sent to Q. */
-		for (SimpleNode n : subsetForPeer) {
+		for (SimpleNode n : subsetForPeerQ) {
 			n = this.graph.getNodeByLabel(n.getLabel());
-			if (this.graph.getEdge(n, peer) == null
-			&& !peerNeighbors.contains(n)
-			&& n.getLabel() != peer.getLabel()) {
-				if(peerNeighbors.size() > cacheSize) {
-					SimpleNode removeTarget = peerNeighborsSubset.get(peerNeighborsSubset.size()-1);
-					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
-					SimpleEdge toRemove = this.graph.getEdge(peer, removeTarget);
+			if (this.graph.getEdge(n, peerQ) == null
+			&& !peerQNeighbors.contains(n)
+			&& n.getLabel() != peerQ.getLabel()) {
+				if(peerQNeighbors.size() > cacheSize) {
+					SimpleNode removeTarget = peerQNeighborsSubset.get(peerQNeighborsSubset.size()-1);
+					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel()); // XXX c'est quoi ça ?? 🤔
+					SimpleEdge toRemove = this.graph.getEdge(peerQ, removeTarget);
 					this.graph.removeEdge(toRemove);
 					removedEdges.add(toRemove);
 				}
-				peerKeptEntries.add(n);
-				this.graph.addEdge(peer, n);
-				newEdges.add(this.graph.getEdge(peer, n));
-				peerNeighbors.add(n);
+				peerQKeptEntries.add(n);
+				this.graph.addEdge(peerQ, n);
+				newEdges.add(this.graph.getEdge(peerQ, n));
+				peerQNeighbors.add(n);
 			}
 		}
 
-		Utilities.printDebug("Remaining entries within subset from node: " + peerKeptEntries);
+		Utilities.printDebug("Remaining entries within subset from node P: " + peerQKeptEntries);
 		Utilities.printDebug("Created Edges: " + newEdges);
 		Utilities.printDebug("Removed Edges: " + removedEdges);
 		

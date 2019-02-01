@@ -113,7 +113,7 @@ public class ChiSquaredTest {
 			chosenPeers.add(nextPeer.getLabel());
 		}
 
-		HashMap<Integer,Double> frequencies = new HashMap<Integer, Double>();
+		HashMap<Integer, Double> frequencies = new HashMap<Integer, Double>();
 		for(Integer occ : chosenPeers) {
 			double freqVal = 1.0/chosenPeers.size();
 			if (frequencies.containsKey(occ)) {

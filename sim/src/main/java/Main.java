@@ -1,5 +1,6 @@
 import algorithms.*;
 import models.*;
+import utilities.Utilities;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 // TODO oh non veut-il qu'on fasse le graphe nous-mêmes ??
@@ -11,6 +12,8 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 public class Main {
 	public static void main(String args[]) {
+		Utilities.info = true;
+		Utilities.debug = true;
 		AlgorithmBasic algo = new AlgorithmBasic();
 		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
 		g.importFromCSV("testgraph1.csv");
