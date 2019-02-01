@@ -45,7 +45,10 @@ public class ChiSquaredTest {
 
 		ChiSquaredDistribution csd = new ChiSquaredDistribution(this.initialGraph.vertexSet().size()-1);
 
+		// On utilise la T-Distribution pour obtenir la valeur d'arrêt du test
 		TDistribution td = new TDistribution(this.initialGraph.vertexSet().size()-1);
+
+
 		double alpha = (1-confidenceLevel)/2;
 		double limitValue = -td.inverseCumulativeProbability(alpha);
 

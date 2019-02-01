@@ -17,12 +17,12 @@ public class Main {
 		AlgorithmBasic algo = new AlgorithmBasic();
 		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
 		g.importFromCSV("testgraph1.csv");
-		final int SHUFFLE_INTERVAL = 150;
-		final int PEER_AMOUNT = 20;
+		final int SHUFFLE_INTERVAL = 20;
+		final int PEER_AMOUNT = 150;
 		final int CACHE_SIZE = 3;
 		final int SHUFFLE_LENGTH = 2;
 		final double CONFIDENCE_LEVEL = 0.98;
 		ChiSquaredTest test = new ChiSquaredTest(algo, g);
-		test.runFullTest(0, SHUFFLE_INTERVAL, PEER_AMOUNT, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
+		test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 	}
 }
