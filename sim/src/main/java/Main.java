@@ -13,8 +13,8 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 public class Main {
 	public static void main(String args[]) {
 		Utilities.info = true;
-		Utilities.debug = false;
-		AlgorithmBasic algo = new AlgorithmBasic();
+		Utilities.debug = true;
+		/*AlgorithmBasic algo = new AlgorithmBasic();
 		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
 		g.importFromCSV("testgraph1.csv");
 		final int SHUFFLE_INTERVAL = 20;
@@ -23,6 +23,17 @@ public class Main {
 		final int SHUFFLE_LENGTH = 2;
 		final double CONFIDENCE_LEVEL = 0.98;
 		ChiSquaredTest test = new ChiSquaredTest(algo, g);
+		test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);*/
+
+		AlgorithmReference algo = new AlgorithmReference();
+		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
+		g.generateRandom(10,0.2);
+		ChiSquaredTest test = new ChiSquaredTest(algo,g);
+		final int SHUFFLE_INTERVAL = 20;
+		final int PEER_AMOUNT = 12;
+		final int CACHE_SIZE = 3;
+		final int SHUFFLE_LENGTH = 2;
+		final double CONFIDENCE_LEVEL = 0.90;
 		test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 	}
 }

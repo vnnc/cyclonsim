@@ -133,6 +133,7 @@ public class ChiSquaredTest {
 			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
 		}
 		res *= chosenPeers.size();
+		Utilities.printDebug("Computed ChiSquare value: "+res);
 		return res;
 	}
 }
