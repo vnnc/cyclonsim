@@ -1,5 +1,6 @@
 import algorithms.*;
 import models.*;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 // TODO oh non il veut qu'on fasse le graphe nous-mêmes ??
 
@@ -11,17 +12,18 @@ import models.*;
 
 public class Main {
 
+
 	public static void main(String args[]) {
 
 		AlgorithmBasic algo = new AlgorithmBasic();
+		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
+		g.importFromCSV("testgraph1.csv");
 		final int CACHE_SIZE = 3;
 		final int SHUFFLE_LENGTH = 2;
 
-		algo.initGraphFromCSV("testgraph1.csv",CACHE_SIZE,SHUFFLE_LENGTH);
+		ChiSquaredTest test = new ChiSquaredTest(algo,g);
 
-		ChiSquaredTest t = new ChiSquaredTest(algo);
-
-		System.out.println("KhiSquared Value: " + t.runTest(0,100,10));
+		test.runFullTest(0,100,5,CACHE_SIZE,SHUFFLE_LENGTH,0.95);
 
 	}
 }

@@ -1,6 +1,7 @@
 package algorithms;
 
 import models.*;
+import utilities.Utilities;
 
 import java.util.*;
 
@@ -31,6 +32,13 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	    this.graph.importFromCSV(path);
 	    this.cacheSize = cacheSize;
 	    this.shuffleLength = shuffleLength;
+    }
+
+    @Override
+    public void initGraph(Graph g,int cacheSize,int shuffleLength){
+		this.graph = g;
+		this.cacheSize = cacheSize;
+		this.shuffleLength = shuffleLength;
     }
 
 	@Override
@@ -65,17 +73,18 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	public void shuffle(int nodeLabel) {
 		/* Each peer P repeatedly initiates a neighbor exchange operation, known
 		as shuffle, by executing the following six steps */
-		System.out.println("Graph before shuffle: " + this.graph);
+
+		Utilities.printDebug("Graph before shuffle: " + this.graph);
 		SimpleNode node = this.graph.getNodeByLabel(nodeLabel);
 		ArrayList<SimpleNode> nodeNeighbors = this.graph.getNeighborsOfNode(node);
-		System.out.println("Neighbors of node " + node + ": " + nodeNeighbors);
+		Utilities.printDebug("Neighbors of node " + node + ": " + nodeNeighbors);
 		
 		/* 1. Select a random subset of l neighbors (1 ≤ l ≤ c) from P’s own cache,
 		and a random peer, Q, within this subset, where l is a system parameter,
 		called shuffle length. */
 		int neighborsSubsetSize = Math.min(shuffleLength, nodeNeighbors.size());
 		if(nodeNeighbors.size() <= 0) {
-			System.out.println("[Error during shuffle] Graph: " + this.graph);
+			Utilities.printDebug("[Error during shuffle] Graph: " + this.graph);
 			return;
 		}
 
@@ -86,7 +95,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 
 		// peer added to choosenPeers for chi-squared test computations
 		this.chosenPeers.add(peer.getLabel());
-		System.out.println("Chosen peer: " + peer);
+		Utilities.printDebug("Chosen peer: " + peer);
 		
 		/* 3. Send the updated subset to Q. */
 		ArrayList<SimpleNode> subsetForPeer = new ArrayList<SimpleNode>();
@@ -97,14 +106,14 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 				subsetForPeer.add(n);
 			}
 		}
-		System.out.println("Subset sent to peer: " + subsetForPeer);
+		Utilities.printDebug("Subset sent to peer: " + subsetForPeer);
 		
 		/* 4. Receive from Q a subset of no more than l of Q’s neighbors. */
 		ArrayList<SimpleNode> peerNeighbors = this.graph.getNeighborsOfNode(peer);
-		System.out.println("Peer neighbors: " + peerNeighbors);
+		Utilities.printDebug("Peer neighbors: " + peerNeighbors);
 		int peerNeighborsSubsetSize = Math.min(shuffleLength, peerNeighbors.size());
 		if (peerNeighbors.size() <= 0) {
-			System.out.println("[Error during shuffle] Graph: " + this.graph);
+			Utilities.printDebug("[Error during shuffle] Graph: " + this.graph);
 			return;
 		}
 
@@ -141,7 +150,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 			}
 		}
 
-		System.out.println("Remaining entries within subset from peer: " + nodeKeptEntries);
+		Utilities.printDebug("Remaining entries within subset from peer: " + nodeKeptEntries);
 		ArrayList<SimpleNode> peerKeptEntries = new ArrayList<SimpleNode>();
 
 		/* 6. Update Q’s cache to include all remaining entries, by firstly
@@ -166,11 +175,11 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 			}
 		}
 
-		System.out.println("Remaining entries within subset from node: " + peerKeptEntries);
-		System.out.println("Created Edges: " + newEdges);
-		System.out.println("Removed Edges: " + removedEdges);
+		Utilities.printDebug("Remaining entries within subset from node: " + peerKeptEntries);
+		Utilities.printDebug("Created Edges: " + newEdges);
+		Utilities.printDebug("Removed Edges: " + removedEdges);
 		
-		System.out.println("Graph after shuffle: " + this.graph);
+		Utilities.printDebug("Graph after shuffle: " + this.graph);
 	}
 
 	@Override
