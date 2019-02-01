@@ -14,7 +14,11 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	private Graph<SimpleNode, SimpleEdge> graph;
 	private Random rng = new Random();
 	private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
+
+	// taille du 'cache' dans l'article cyclon
 	private int cacheSize;
+
+	// l dans l'article cyclon
 	private int shuffleLength;
 
 	@Override
@@ -89,7 +93,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 		ArrayList<SimpleNode> nodePNeighborsSubset = this.getRandomSubset(nodePNeighbors, pNeighborsSubsetSize);
 
 		SimpleNode peerQ = nodePNeighborsSubset.get(rng.nextInt(nodePNeighborsSubset.size()));
-		peerQ = this.graph.getNodeByLabel(peerQ.getLabel()); // XXX c'est quoi ça ?? 🤔
+		peerQ = this.graph.getNodeByLabel(peerQ.getLabel()); // On va chercher l'objet correspondant à peerQ dans le graph
 
 		// peer added to choosenPeers for chi-squared test computations
 		this.chosenPeers.add(peerQ.getLabel());
@@ -120,33 +124,38 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 		/* 5. Discard entries pointing to P, and entries that are already in P's cache. */
 		ArrayList<SimpleEdge> newEdges = new ArrayList<SimpleEdge>();
 		ArrayList<SimpleEdge> removedEdges = new ArrayList<SimpleEdge>();
-		ArrayList<SimpleNode> nodePKeptEntries = new ArrayList<SimpleNode>(); // XXX seulement pour le débug ?
+		ArrayList<SimpleNode> nodePKeptEntries = new ArrayList<SimpleNode>();
 
 		for (SimpleNode n : peerQNeighborsSubset) {
 			n = this.graph.getNodeByLabel(n.getLabel());
 			if(this.graph.getEdge(n, nodeP) == null
-			&& !nodePNeighbors.contains(n)
-			&& n.getLabel() != nodePLabel) {
-				if (nodePNeighbors.size() > cacheSize
-				&& subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
+					&& !nodePNeighbors.contains(n)
+					&& n.getLabel() != nodePLabel) {
+
+				if(nodePNeighbors.size() < cacheSize){
+					nodePKeptEntries.add(n);
+					this.graph.addEdge(nodeP,n);
+					newEdges.add(this.graph.getEdge(nodeP,n));
+					nodePNeighbors.add(n);
+
+				}
+				else if(subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
 					SimpleNode removeTarget = subsetForPeerQ.get(subsetForPeerQ.size()-1);
-					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel()); // XXX c'est quoi ça ?? 🤔
-					SimpleEdge toRemove = this.graph.getEdge(nodeP, removeTarget);
+					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
+					SimpleEdge toRemove = this.graph.getEdge(nodeP,removeTarget);
 					this.graph.removeEdge(toRemove);
 					removedEdges.add(toRemove);
-				}
-				if (nodePNeighbors.size() < cacheSize
-				|| subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
-					nodePKeptEntries.add(n); // XXX seulement pour le débug ?
-					this.graph.addEdge(nodeP, n);
-					newEdges.add(this.graph.getEdge(nodeP, n));
+					nodePKeptEntries.add(n);
+					this.graph.addEdge(nodeP,n);
+					newEdges.add(this.graph.getEdge(nodeP,n));
 					nodePNeighbors.add(n);
 				}
 			}
 		}
-		Utilities.printDebug("Remaining entries within subset from peer Q: " + nodePKeptEntries); // XXX seulement pour le débug ?
+
+		Utilities.printDebug("Remaining entries within subset from peer Q: " + nodePKeptEntries);
 		
-		ArrayList<SimpleNode> peerQKeptEntries = new ArrayList<SimpleNode>(); // XXX seulement pour le débug ?
+		ArrayList<SimpleNode> peerQKeptEntries = new ArrayList<SimpleNode>();
 
 		/* 6. Update P's cache to include all remaining entries, by firstly
 		using empty cache slots (if any), and secondly replacing entries
@@ -158,7 +167,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 			&& n.getLabel() != peerQ.getLabel()) {
 				if(peerQNeighbors.size() > cacheSize) {
 					SimpleNode removeTarget = peerQNeighborsSubset.get(peerQNeighborsSubset.size()-1);
-					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel()); // XXX c'est quoi ça ?? 🤔
+					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
 					SimpleEdge toRemove = this.graph.getEdge(peerQ, removeTarget);
 					this.graph.removeEdge(toRemove);
 					removedEdges.add(toRemove);

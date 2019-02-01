@@ -13,7 +13,7 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 public class Main {
 	public static void main(String args[]) {
 		Utilities.info = true;
-		Utilities.debug = true;
+		Utilities.debug = false;
 		AlgorithmBasic algo = new AlgorithmBasic();
 		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
 		g.importFromCSV("testgraph1.csv");
