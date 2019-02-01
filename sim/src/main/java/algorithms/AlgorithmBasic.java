@@ -7,6 +7,7 @@ import java.util.*;
 
 //TODO utiliser les mêmes termes qu'eux :
 // - partialView == peerNeighbors ?
+// - P et Q comme dans l'article
 // - etc.
 
 public class AlgorithmBasic extends AbstractAlgorithm {
@@ -50,7 +51,7 @@ public class AlgorithmBasic extends AbstractAlgorithm {
 	@Override
 	public AbstractNode nextPeer(Object n){
 		ArrayList<SimpleNode> neighbors = this.graph.getNeighborsOfNode((SimpleNode) n);
-		if(neighbors.size()>0) {
+		if(neighbors.size() > 0) {
 			Random r = new Random();
 			int index = r.nextInt(neighbors.size());
 			return neighbors.get(index);

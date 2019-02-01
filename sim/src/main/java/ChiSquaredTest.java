@@ -31,7 +31,7 @@ public class ChiSquaredTest {
 	 *                        de calcul du test X² le graph passera par 5 shuffle
 	 * @param cacheSize taille maximale de la vue partielle d'un noeud du graphe
 	 * @param shuffleLength taille du sous-ensemble de la vue partielle considérée lors d'un shuffle
-	 * @param confidenceLevel niveau de confiance, exemple: si vaut 0.98 , une
+	 * @param confidenceLevel niveau de confiance, exemple: si ça vaut 0.98, une
 	 *                        valeur qui suit la loi de distribution a 98% de
 	 *                        chance de se trouver dans l'intervalle de confiance
 	 */
@@ -109,7 +109,8 @@ public class ChiSquaredTest {
 
 		for(int i=0; i<peerAmount; i++) {
 			this.algorithm.multiShuffleAll(shuffleInterval);
-			chosenPeers.add(this.algorithm.nextPeer(this.algorithm.getGraph().getNodeByLabel(nodeLabel)).getLabel()); //XXX quoi??
+			AbstractNode nextPeer = this.algorithm.nextPeer(this.algorithm.getGraph().getNodeByLabel(nodeLabel));
+			chosenPeers.add(nextPeer.getLabel());
 		}
 
 		HashMap<Integer,Double> frequencies = new HashMap<Integer, Double>();

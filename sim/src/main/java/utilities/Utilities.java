@@ -6,7 +6,6 @@ public class Utilities {
 	static boolean info = true;
 
 	public static void printDebug(String msg) {
-
 		if(Utilities.debug){
 			System.out.println(msg);
 		}
