@@ -17,7 +17,7 @@ public class Main {
 		
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
-		g.importFromCSV("testgraph0.csv");
+		g.importFromCSV("testgraph1.csv");
 		final int PEER_AMOUNT = 20;//100000;
 		final int SHUFFLE_INTERVAL = 1;
 		final int CACHE_SIZE = 4;

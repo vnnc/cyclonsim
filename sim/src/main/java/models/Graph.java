@@ -3,14 +3,11 @@ package models;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.generate.GnpRandomGraphGenerator;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.io.*;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,8 +41,14 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 		this.vertexClass = vertexClass;
 	}
 
-
-	public void generateRandom(int vertexAmount,double edgeProba) {
+	/*
+	 * Génère un graphe aléatoire, où "vertexAmount" est le nombre de nœuds, et
+	 * "edgeProba" est la probabilité qu'une arète potentielle soit construite.
+	 * Si edgeProba vaut 0.0 le graphe n'aura aucune arète, si edgeProba vaut 1.0
+	 * le graphe sera complet.
+	 * FIXME s'assure-t-on que le graphe soit connexe ?
+	 */
+	public void generateRandom(int vertexAmount, double edgeProba) {
 		GnpRandomGraphGenerator<T1, T2> rgg = new GnpRandomGraphGenerator<T1, T2>(vertexAmount, edgeProba);
 		VertexFactory<T1> factory = new VertexFactory<T1>() {
 			private int n = 0;
@@ -81,7 +84,11 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 		return (T1) new EmptyNode();
 	}
 
-	public ArrayList<T1> getNeighborsOfNode(T1 node) { // XXX
+	/*
+	 * Retourne la liste des nœuds voisins du nœud "node" dans le graphe, c'est-
+	 * -à-dire sa "partial view".
+	 */
+	public ArrayList<T1> getNeighborsOfNode(T1 node) {
 		ArrayList<T1> res = new ArrayList<T1>();
 		Set<T2> edges_set = this.edgesOf(node);
 		for(T2 edge : edges_set) {
@@ -93,15 +100,16 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 		return res;
 	}
 
-	public void importFromCSV(String path)
-	{
+	/*
+	 * Construit le graphe à partir d'un fichier CSV décrivant la liste
+	 * d'adjacence du graphe.
+	 */
+	public void importFromCSV(String path) {
 		final Class vertexClass = this.vertexClass;
 		final Class edgeClass = this.edgeClass;
-		VertexProvider<T1> vprov = new VertexProvider<T1>()
-		{
+		VertexProvider<T1> vprov = new VertexProvider<T1>()	{
 			@Override
-			public T1 buildVertex(String label, Map<String, Attribute> attributes)
-			{
+			public T1 buildVertex(String label, Map<String, Attribute> attributes) {
 				try {
 					return (T1) vertexClass.getDeclaredConstructor(int.class).newInstance(Integer.parseInt(label));
 				} catch (InstantiationException e) {
@@ -143,8 +151,11 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 		}
 	}
 
-	public String exportToCSV(String path)
-	{
+	/*
+	 * Exporte le graphe sous forme d'un fichier CSV qui décrit la liste
+	 * d'adjacence du graphe.
+	 */
+	public String exportToCSV(String path) {
 		ComponentNameProvider<T1> nprov = new ComponentNameProvider<T1>() {
 			@Override
 			public String getName(T1 t1) {
