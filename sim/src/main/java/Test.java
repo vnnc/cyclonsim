@@ -60,8 +60,13 @@ public class Test {
 			this.genPeerSamples(nodeLabel,peerAmount,shuffleInterval);
 			independenceValues.add(testIndependence()); //TODO threads
 			distributionValues.add(testDistribution()); //TODO threads
-			standardErrors.add(Math.sqrt(computeVariance(distributionValues)/n));
+			double err = computeVariance(distributionValues)/n;
+			if (err < 0.000001) {
+				err = 0.0;
+			}
+			standardErrors.add(Math.sqrt(err));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
+			Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
 		} while(standardErrors.get(n-1) > limitValue);
 
 		// Moyenne des valeurs du test X² calculées
