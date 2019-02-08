@@ -1,7 +1,6 @@
 import algorithms.*;
 import models.*;
 import utilities.Utilities;
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 // TODO oh non veut-il qu'on fasse le graphe nous-mêmes ??
 
@@ -18,23 +17,23 @@ public class Main {
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("testgraph1.csv");
-		final int PEER_AMOUNT = 20;//100000;
-		final int SHUFFLE_INTERVAL = 1;
+		final int PEER_AMOUNT = 150;
+		final int SHUFFLE_INTERVAL = 5;
 		final int CACHE_SIZE = 4;
 		final int SHUFFLE_LENGTH = 2;
-		final double CONFIDENCE_LEVEL = 0.90; //0.999 ça va vite mais le test ne passerait jamais
+		final double CONFIDENCE_LEVEL = 0.95;
 //		g.generateRandom(50, 0.1); //1000, 0.1
-//		g.exportToCSV("testgraph0.csv");
-		ChiSquaredTest test = new ChiSquaredTest(algo, g);
+//		g.exportToCSV("testgraph5.csv");
+		Test test = new Test(algo, g);
 		boolean reussite = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 		Utilities.printInfo("Le test passe-t-il avec succès ? " + reussite);
-		Utilities.printInfo(100.0*algo.nbEchanges/(algo.nbEchanges+algo.nbEchecs) + "% de shuffling");
+		Utilities.printInfo((int) (100.0*algo.nbEchanges/(algo.nbEchanges+algo.nbEchecs)) + "% de shuffling");
 
 
 //		AlgorithmRandomReference algo = new AlgorithmRandomReference();
 //		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
 //		g.generateRandom(50, 0.2);
-//		ChiSquaredTest test = new ChiSquaredTest(algo,g);
+//		Test test = new Test(algo,g);
 //		final int SHUFFLE_INTERVAL = 20;
 //		final int PEER_AMOUNT = 12;
 //		final int CACHE_SIZE = 3;

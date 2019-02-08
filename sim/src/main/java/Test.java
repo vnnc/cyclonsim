@@ -5,17 +5,17 @@
 import algorithms.AbstractAlgorithm;
 import models.*;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.TDistribution;
 import utilities.Utilities;
 import java.util.*;
 
-public class ChiSquaredTest {
+public class Test {
 
 	private Graph initialGraph;
 	private AbstractAlgorithm algorithm;
+	private ArrayList<Integer> samples;
 
-	public ChiSquaredTest(AbstractAlgorithm alg,Graph initialGraph) {
+	public Test(AbstractAlgorithm alg, Graph initialGraph) {
 		this.algorithm = alg;
 		this.initialGraph = initialGraph;
 	}
@@ -23,8 +23,8 @@ public class ChiSquaredTest {
 	/**
 	 * @param nodeLabel label (étiquette) du noeud du graphe qui est observé dans le test
 	 * @param peerAmount nombre d'appels de nextPeer par calcul de valeur du test X²
-	 * @see AbstractAlgorithm#nextPeer(Object)
-	 * @see #runComputation(int, int, int)
+	 * @see AbstractAlgorithm#nextPeer(Integer)
+	 * @see #testDistribution()
 	 * @param shuffleInterval nombre de shuffle sur tout les noeuds du graph entre
 	 *                        chaque appel de nextPeer. Exemple: Si shuffleInterval
 	 *                        vaut 5, entre chaque appel de nextPeer dans la méthode
@@ -38,7 +38,8 @@ public class ChiSquaredTest {
 	public boolean runFullTest(int nodeLabel, int peerAmount, int shuffleInterval,
 	                        int cacheSize, int shuffleLength, double confidenceLevel) {
 		// Liste contenant les valeurs du test X² calculées
-		ArrayList<Double> values = new ArrayList<Double>();
+		ArrayList<Double> distributionValues = new ArrayList<Double>();
+		ArrayList<Double> independenceValues = new ArrayList<Double>();
 
 		// Liste contenant les valeurs d'erreur type des valeurs contenues dans "values" => sqrt(variance/n)
 		ArrayList<Double> standardErrors = new ArrayList<Double>();
@@ -56,17 +57,21 @@ public class ChiSquaredTest {
 		do {
 			n++;
 			this.algorithm.initGraph(initialGraph, cacheSize, shuffleLength);
-			values.add(runComputation(nodeLabel, peerAmount, shuffleInterval)); //TODO threads
-			standardErrors.add(Math.sqrt(computeVariance(values)/n));
+			this.genPeerSamples(nodeLabel,peerAmount,shuffleInterval);
+			independenceValues.add(testIndependence()); //TODO threads
+			distributionValues.add(testDistribution()); //TODO threads
+			standardErrors.add(Math.sqrt(computeVariance(distributionValues)/n));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
 		} while(standardErrors.get(n-1) > limitValue);
 
 		// Moyenne des valeurs du test X² calculées
-		double chiMean = computeMean(values);
+		double chiMean = computeMean(distributionValues);
+		double indepMean = computeMean(independenceValues);
 
+		Utilities.printInfo("Mean value of Pearson Correlation Coefficients: "+indepMean);
 		Utilities.printInfo("Mean ChiSquared value: " + chiMean);
-		Utilities.printInfo("Maximum ChiSquared value: " + Collections.max(values));
-		Utilities.printInfo("Minimum ChiSquared value: " + Collections.min(values));
+		Utilities.printInfo("Maximum ChiSquared value: " + Collections.max(distributionValues));
+		Utilities.printInfo("Minimum ChiSquared value: " + Collections.min(distributionValues));
 
 		// Borne supérieure de l'intervalle de confiance selon les valeurs calculées
 		double rightBound = chiMean + limitValue*standardErrors.get(n-1);
@@ -106,20 +111,55 @@ public class ChiSquaredTest {
 		return (expSquared - exp);
 	}
 
-	private double runComputation(int nodeLabel, int peerAmount, int shuffleInterval) {
-		int graphSize = this.algorithm.getGraph().vertexSet().size();
-		double expectedFreq = 1.0/graphSize;
+	private void genPeerSamples(int nodeLabel,int peerAmount,int shuffleInterval){
 		ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
-
 		for(int i=0; i<peerAmount; i++) {
 			this.algorithm.multiShuffleAll(shuffleInterval);
 			AbstractNode nextPeer = this.algorithm.nextPeer(nodeLabel);
 			chosenPeers.add(nextPeer.getLabel());
 		}
+		this.samples = chosenPeers;
+	}
+
+	private double testIndependence(){
+
+		ArrayList<Double> X = new ArrayList<Double>();
+		ArrayList<Double> Y = new ArrayList<Double>();
+
+		int i = 0;
+		while(i<=this.samples.size()-2){
+			X.add(new Double(this.samples.get(i)));
+			Y.add(new Double(this.samples.get(i+1)));
+			i=i+2;
+		}
+
+		double Xm = computeMean(X);
+		double Ym = computeMean(Y);
+
+		double sum1 = 0;
+		double sum2 = 0;
+		double sum3 = 0;
+		for(int j=0;j<(this.samples.size()/2);j++){
+			double Xj = X.get(j);
+			double Yj = Y.get(j);
+			sum1+= (Xj-Xm)*(Yj-Ym);
+			sum2+= Math.pow((Xj-Xm),2);
+			sum3+= Math.pow((Yj-Ym),2);
+		}
+
+		double coefficient = sum1/(Math.sqrt(sum2)*Math.sqrt(sum3));
+		return coefficient;
+	}
+
+	private double testDistribution() {
+		Set<SimpleNode> nodeSet = this.initialGraph.vertexSet();
+		int graphSize = nodeSet.size();
+		double expectedFreq = 1.0/graphSize;
+
 
 		HashMap<Integer, Double> frequencies = new HashMap<Integer, Double>();
-		for(Integer occ : chosenPeers) {
-			double freqVal = 1.0/chosenPeers.size();
+		for(Integer occ : this.samples) {
+			double freqVal = 1.0/this.samples.size();
 			if (frequencies.containsKey(occ)) {
 				double prev = frequencies.get(occ);
 				frequencies.put(occ,prev + freqVal);
@@ -133,7 +173,7 @@ public class ChiSquaredTest {
 			Utilities.printDebug("(k,v) = (" + entry.getKey() + "," + entry.getValue() + ")");
 			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
 		}
-		res *= chosenPeers.size();
+		res *= this.samples.size();
 		Utilities.printDebug("Computed ChiSquare value: "+res);
 		return res;
 	}
