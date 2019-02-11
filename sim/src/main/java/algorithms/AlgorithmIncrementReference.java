@@ -5,16 +5,17 @@ import utilities.Utilities;
 
 import java.util.*;
 
-public class AlgorithmRandomReference extends AbstractAlgorithm {
+public class AlgorithmIncrementReference extends AbstractAlgorithm {
 
 	private Graph<SimpleNode, SimpleEdge> graph;
 	private Random rng = new Random();
 	private int graphSize;
-
+	private static int cpt;
 
 	@Override
 	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength) {
 		this.graphSize = graphSize;
+		this.cpt = 0;
 	}
 
 	@Override
@@ -26,6 +27,7 @@ public class AlgorithmRandomReference extends AbstractAlgorithm {
 	public void initGraph(Graph g, int cacheSize,int shuffleLength) {
 		this.graphSize = g.vertexSet().size();
 		this.graph = g;
+		this.cpt = 0;
 	}
 
 	@Override
@@ -33,7 +35,7 @@ public class AlgorithmRandomReference extends AbstractAlgorithm {
 
 	@Override
 	public AbstractNode nextPeer(Integer label){
-		AbstractNode node = new SimpleNode(rng.nextInt(this.graphSize));
+		AbstractNode node = new SimpleNode((this.cpt++)%this.graphSize);
 		return node;
 	}
 
