@@ -2,6 +2,8 @@ import algorithms.*;
 import models.*;
 import utilities.Utilities;
 
+import java.lang.reflect.InvocationTargetException;
+
 // TODO oh non veut-il qu'on fasse le graphe nous-mêmes ??
 
 // [divers algos] -> interface getNextPeer() -> le khi² qui fait 1000× "appeler getNextPeer() 1000×" et en calcule la moyenne
@@ -10,67 +12,29 @@ import utilities.Utilities;
 // où "faible" = alpha qui dépend de la probabilité que ce soit juste, qu'on se fixe
 
 public class Main {
-	public static void main(String args[]) {
-//		Utilities.info = true;
-//		Utilities.debug = true;
-		
+	public static void main(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+
+		Utilities.info = true;
+		Utilities.debug = false;
+
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
-		g.importFromCSV("testgraph1.csv");
-		final int PEER_AMOUNT = 150;
-		final int SHUFFLE_INTERVAL = 5;
-		final int CACHE_SIZE = 4;
-		final int SHUFFLE_LENGTH = 2;
-		final double CONFIDENCE_LEVEL = 0.95;
-//		g.generateRandom(50, 0.1); //1000, 0.1
-//		g.exportToCSV("testgraph5.csv");
+		g.importFromCSV("sim/testgraph3.csv");
+		final int PEER_AMOUNT = 50;
+		final int SHUFFLE_INTERVAL = 1;
+		final int CACHE_SIZE = 6;
+		final int SHUFFLE_LENGTH = 4;
+		final double CONFIDENCE_LEVEL = 0.99;
 		Test test = new Test(algo, g);
 		boolean reussite = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 		Utilities.printInfo("Le test passe-t-il avec succès ? " + reussite);
 		Utilities.printInfo((int) (100.0*algo.nbEchanges/(algo.nbEchanges+algo.nbEchecs)) + "% de shuffling");
+		g.exportToCSV("sim/outputgraph.csv");
 
-
-//		AlgorithmRandomReference algo = new AlgorithmRandomReference();
 //		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
-//		g.generateRandom(50, 0.2);
-//		Test test = new Test(algo,g);
-//		final int SHUFFLE_INTERVAL = 20;
-//		final int PEER_AMOUNT = 12;
-//		final int CACHE_SIZE = 3;
-//		final int SHUFFLE_LENGTH = 2;
-//		final double CONFIDENCE_LEVEL = 0.90;
-//		test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
+//		g.generateRandom(20,6);
+//		g.exportToCSV("sim/testgraph3.csv");
+//		System.out.println(g);
+
 	}
 }
-
-
-/*
-
-on teste l'équiprobabilité des variables mais pas leur indépendance ????
-
-la fréquence de chaque nœud est quasi la même -> ok, cool, mais osef un petit peu
-
-les fréquences convergent vers l'équiprobabilité mais la différence absolue diverge
-
-int i = 0;
-int nextRand() {
-	return (i++)%n;
-}
-
--------------------
-
-i=0
-r=0
-k=0
-int nextRand() {
-	if (i%k ==0):
-		r = rand.nextint(k)
-	i++
-	return r
-}
-
-pour la semaine prochaine : l'intro, le contexte, le(s) problème(s), la problématique/question scientifique
-
-quel(s) test(s) du khi² + set-up expérimental
-
-*/

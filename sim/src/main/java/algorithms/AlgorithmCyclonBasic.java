@@ -3,6 +3,8 @@ package algorithms;
 import models.*;
 import utilities.Utilities;
 
+import javax.rmi.CORBA.Util;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 //TODO utiliser les mêmes termes qu'eux :
@@ -25,9 +27,9 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 	public static int nbEchecs = 0;
 
 	@Override
-	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength) {
+	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class,SimpleEdge.class);
-		this.graph.generateRandom(graphSize, 0.3);
+		this.graph.generateRandom(graphSize, cacheSize);
 		this.cacheSize = cacheSize;
 		this.shuffleLength = shuffleLength;
 	}
@@ -124,33 +126,41 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 		ArrayList<SimpleNode> peerQNeighborsSubset = this.getRandomSubset(peerQNeighbors, peerQNeighborsSubsetSize);
 
-		/* 5. Discard entries pointing to P, and entries that are already in P's cache. */
 		ArrayList<SimpleEdge> newEdges = new ArrayList<SimpleEdge>();
 		ArrayList<SimpleEdge> removedEdges = new ArrayList<SimpleEdge>();
 		ArrayList<SimpleNode> nodePKeptEntries = new ArrayList<SimpleNode>();
 
-		for (SimpleNode n : peerQNeighborsSubset) {
+		ArrayList<SimpleNode> disposables = new ArrayList<SimpleNode>(subsetForPeerQ);
+		disposables.remove(nodeP);
+
+
+		for(SimpleNode n : peerQNeighborsSubset)
+		{
 			n = this.graph.getNodeByLabel(n.getLabel());
-			if(this.graph.getEdge(n, nodeP) == null
-					&& !nodePNeighbors.contains(n)
-					&& n.getLabel() != nodePLabel) {
 
-				if(nodePNeighbors.size() < cacheSize){
+			if(this.graph.getEdge(n,nodeP) == null && this.graph.getEdge(nodeP,n) == null && nodeP!=n){
+				if(nodePNeighbors.size()<cacheSize){
+
 					nodePKeptEntries.add(n);
+
 					this.graph.addEdge(nodeP,n);
+
 					newEdges.add(this.graph.getEdge(nodeP,n));
 					nodePNeighbors.add(n);
-
-				} else if(subsetForPeerQ.get(subsetForPeerQ.size()-1) != nodeP) {
-					SimpleNode removeTarget = subsetForPeerQ.get(subsetForPeerQ.size()-1);
-					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
+				}else if(disposables.size()>0){
+					SimpleNode removeTarget = disposables.get(disposables.size()-1);
 					SimpleEdge toRemove = this.graph.getEdge(nodeP,removeTarget);
-					this.graph.removeEdge(toRemove);
-					removedEdges.add(toRemove);
-					nodePKeptEntries.add(n);
-					this.graph.addEdge(nodeP,n);
-					newEdges.add(this.graph.getEdge(nodeP,n));
-					nodePNeighbors.add(n);
+					if(toRemove != null) {
+
+						this.graph.removeEdge(toRemove);
+						disposables.remove(removeTarget);
+						removedEdges.add(toRemove);
+
+						nodePKeptEntries.add(n);
+						this.graph.addEdge(nodeP, n);
+						newEdges.add(this.graph.getEdge(nodeP, n));
+						nodePNeighbors.add(n);
+					}
 				}
 			}
 		}
@@ -159,25 +169,33 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		
 		ArrayList<SimpleNode> peerQKeptEntries = new ArrayList<SimpleNode>();
 
-		/* 6. Update P's cache to include all remaining entries, by firstly
-		using empty cache slots (if any), and secondly replacing entries
-		among the ones originally sent to Q. */
-		for (SimpleNode n : subsetForPeerQ) {
+		disposables = new ArrayList<SimpleNode>(peerQNeighborsSubset);
+
+		for(SimpleNode n : subsetForPeerQ){
 			n = this.graph.getNodeByLabel(n.getLabel());
-			if (this.graph.getEdge(n, peerQ) == null
-			&& !peerQNeighbors.contains(n)
-			&& n.getLabel() != peerQ.getLabel()) {
-				if(peerQNeighbors.size() > cacheSize) {
-					SimpleNode removeTarget = peerQNeighborsSubset.get(peerQNeighborsSubset.size()-1);
-					removeTarget = this.graph.getNodeByLabel(removeTarget.getLabel());
-					SimpleEdge toRemove = this.graph.getEdge(peerQ, removeTarget);
-					this.graph.removeEdge(toRemove);
-					removedEdges.add(toRemove);
+
+			if(this.graph.getEdge(n,peerQ) == null && this.graph.getEdge(peerQ,n) == null && peerQ!=n){
+				if(peerQNeighbors.size()<cacheSize){
+					peerQKeptEntries.add(n);
+					this.graph.addEdge(peerQ, n);
+					newEdges.add(this.graph.getEdge(peerQ, n));
+					peerQNeighbors.add(n);
+				}else if(disposables.size()>0){
+					SimpleNode removeTarget = disposables.get(disposables.size()-1);
+					SimpleEdge toRemove = this.graph.getEdge(peerQ,removeTarget);
+
+					if(toRemove != null) {
+
+						this.graph.removeEdge(toRemove);
+						disposables.remove(removeTarget);
+						removedEdges.add(toRemove);
+
+						peerQKeptEntries.add(n);
+						this.graph.addEdge(peerQ, n);
+						newEdges.add(this.graph.getEdge(peerQ, n));
+						peerQNeighbors.add(n);
+					}
 				}
-				peerQKeptEntries.add(n);
-				this.graph.addEdge(peerQ, n);
-				newEdges.add(this.graph.getEdge(peerQ, n));
-				peerQNeighbors.add(n);
 			}
 		}
 		
