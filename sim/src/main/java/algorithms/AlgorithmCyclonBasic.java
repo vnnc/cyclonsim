@@ -3,13 +3,8 @@ package algorithms;
 import models.*;
 import utilities.Utilities;
 
-import javax.rmi.CORBA.Util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-
-//TODO utiliser les mêmes termes qu'eux :
-// - partialView == peerNeighbors ?
-// - etc.
 
 public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
@@ -135,11 +130,12 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		disposables.remove(nodeP);
 
 
-		for(SimpleNode n : peerQNeighborsSubset)
-		{
+		for (SimpleNode n : peerQNeighborsSubset) {
 			n = this.graph.getNodeByLabel(n.getLabel());
 
-			if(this.graph.getEdge(n,nodeP) == null && this.graph.getEdge(nodeP,n) == null && nodeP!=n){
+			if (this.graph.getEdge(n, nodeP) == null
+			&& this.graph.getEdge(nodeP, n) == null
+			&& nodeP != n) {
 				if(nodePNeighbors.size()<cacheSize){
 
 					nodePKeptEntries.add(n);
@@ -148,11 +144,10 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 					newEdges.add(this.graph.getEdge(nodeP,n));
 					nodePNeighbors.add(n);
-				}else if(disposables.size()>0){
+				} else if (disposables.size() > 0) {
 					SimpleNode removeTarget = disposables.get(disposables.size()-1);
-					SimpleEdge toRemove = this.graph.getEdge(nodeP,removeTarget);
+					SimpleEdge toRemove = this.graph.getEdge(nodeP, removeTarget);
 					if(toRemove != null) {
-
 						this.graph.removeEdge(toRemove);
 						disposables.remove(removeTarget);
 						removedEdges.add(toRemove);
@@ -175,18 +170,19 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		for(SimpleNode n : subsetForPeerQ){
 			n = this.graph.getNodeByLabel(n.getLabel());
 
-			if(this.graph.getEdge(n,peerQ) == null && this.graph.getEdge(peerQ,n) == null && peerQ!=n){
-				if(peerQNeighbors.size()<cacheSize){
+			if (this.graph.getEdge(n, peerQ) == null
+			&& this.graph.getEdge(peerQ, n) == null
+			&& peerQ != n) {
+				if (peerQNeighbors.size() < cacheSize) {
 					peerQKeptEntries.add(n);
 					this.graph.addEdge(peerQ, n);
 					newEdges.add(this.graph.getEdge(peerQ, n));
 					peerQNeighbors.add(n);
-				}else if(disposables.size()>0){
+				} else if (disposables.size() > 0){
 					SimpleNode removeTarget = disposables.get(disposables.size()-1);
-					SimpleEdge toRemove = this.graph.getEdge(peerQ,removeTarget);
+					SimpleEdge toRemove = this.graph.getEdge(peerQ, removeTarget);
 
 					if(toRemove != null) {
-
 						this.graph.removeEdge(toRemove);
 						disposables.remove(removeTarget);
 						removedEdges.add(toRemove);
@@ -213,7 +209,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		}
 	}
 
-//	@Override
+	//@Override
 	public ArrayList<Integer> getChosenPeers() {
 		return this.chosenPeers;
 	}
