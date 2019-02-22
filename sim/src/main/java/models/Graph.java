@@ -8,10 +8,7 @@ import org.jgrapht.io.*;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 
@@ -48,28 +45,30 @@ public class Graph<T1,T2> extends DefaultDirectedGraph<T1, T2> {
 	 * le graphe sera complet.
 	 * FIXME s'assure-t-on que le graphe soit connexe ?
 	 */
-	public void generateRandom(int vertexAmount, double edgeProba) {
-		GnpRandomGraphGenerator<T1, T2> rgg = new GnpRandomGraphGenerator<T1, T2>(vertexAmount, edgeProba);
-		VertexFactory<T1> factory = new VertexFactory<T1>() {
-			private int n = 0;
-			public T1 createVertex() {
-				T1 node = null;
-				try {
-					node = (T1) vertexClass.getDeclaredConstructor(int.class).newInstance(n);
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
+	public void generateRandom(int vertexAmount, int partialViewSize) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+		Random rng = new Random();
+
+		// Ajout de noeuds *vertexAmount
+		for(int i=0;i<vertexAmount;i++){
+			T1 vertexToAdd = (T1) vertexClass.getDeclaredConstructor(int.class).newInstance(i);
+			this.addVertex(vertexToAdd);
+		}
+
+		Set<T1> vertexSet = this.vertexSet();
+
+		for(T1 x : vertexSet){
+			AbstractNode node = (AbstractNode) x;
+			int nbEdges = 0;
+			while(nbEdges<partialViewSize){
+				T1 y = this.getNodeByLabel(rng.nextInt(vertexSet.size()));
+				AbstractNode edgeTarget = (AbstractNode) y;
+				if(edgeTarget.getLabel()!=node.getLabel() && this.getEdge(x,y)==null){
+					this.addEdge(x,y);
+					nbEdges++;
 				}
-				n++;
-				return (T1) node;
 			}
-		};
-		rgg.generateGraph(this, factory,null);
+		}
 	}
 
 	public T1 getNodeByLabel(int label) {

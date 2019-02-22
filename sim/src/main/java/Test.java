@@ -5,6 +5,7 @@
 import algorithms.AbstractAlgorithm;
 import models.*;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.TDistribution;
 import utilities.Utilities;
 import java.util.*;
@@ -48,10 +49,13 @@ public class Test {
 
 		// On utilise la T-Distribution pour obtenir la valeur d'arrêt du test
 		TDistribution td = new TDistribution(this.initialGraph.vertexSet().size()-1);
+		NormalDistribution nd = new NormalDistribution();
 
 
 		double alpha = (1-confidenceLevel)/2;
 		double limitValue = -td.inverseCumulativeProbability(alpha);
+
+		Utilities.printInfo("Valeur limite: "+limitValue);
 
 		int n = 0;
 		do {
@@ -66,7 +70,7 @@ public class Test {
 			}
 			standardErrors.add(Math.sqrt(err));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
-			Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
+			//Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
 		} while(standardErrors.get(n-1) > limitValue);
 
 		// Moyenne des valeurs du test X² calculées
@@ -90,7 +94,7 @@ public class Test {
 		Utilities.printInfo("Expected critical value for ChiSquared distribution: " + criticalValue);
 		Utilities.printInfo("Computed confidence interval: "
 		                    + "[" + leftBound + ", " + rightBound + "]");
-		return (rightBound < criticalValue);
+		return (chiMean < criticalValue);
 	}
 
 	private double computeMean(ArrayList<Double> values){
