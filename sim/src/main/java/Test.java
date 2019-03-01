@@ -62,7 +62,7 @@ public class Test {
 			n++;
 			this.algorithm.initGraph(initialGraph, cacheSize, shuffleLength);
 			this.genPeerSamples(nodeLabel,peerAmount,shuffleInterval);
-			independenceValues.add(testIndependence()); //TODO threads
+			independenceValues.add(testCorrelation()); //TODO threads
 			distributionValues.add(testDistribution()); //TODO threads
 			double err = computeVariance(distributionValues)/n;
 			if (err < 0.000001) {
@@ -130,7 +130,7 @@ public class Test {
 		this.samples = chosenPeers;
 	}
 
-	private double testIndependence(){
+	private double testCorrelation(){
 
 		ArrayList<Double> X = new ArrayList<Double>();
 		ArrayList<Double> Y = new ArrayList<Double>();
@@ -199,7 +199,7 @@ public class Test {
 	}
 
 	//pearson test de l'independence
-	public ArrayList<Double> independence() {
+	public ArrayList<Double> testIndependence() {
 
 		//System.out.println("Array list: "+this.samples);
 		ArrayList<Double> X = new ArrayList<Double>();
