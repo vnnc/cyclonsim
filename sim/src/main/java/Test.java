@@ -198,6 +198,7 @@ public class Test {
 		return sum;
 	}
 
+	//pearson test de l'independence
 	public double independence() {
 
 		//System.out.println("Array list: "+this.samples);
@@ -214,26 +215,28 @@ public class Test {
 
 		int i = 0;
 		int k = 1;
+
+		//
 		while (k <= this.samples.size() - 1) {
 
 			//System.out.println("i: "+i);
 
-			System.out.println("outter");
+		//	System.out.println("outter");
 			while(i<=this.samples.size()-2 && ((k+i) <= this.samples.size() ) ) {
-				System.out.println("inner");
-				System.out.println("size"+this.samples.size());
-				System.out.println("i: "+i);
-				System.out.println("k: "+k);
+		//		System.out.println("inner");
+		//		System.out.println("size"+this.samples.size());
+		//		System.out.println("i: "+i);
+		//		System.out.println("k: "+k);
 				//System.out.println("i+k: "+i+k);
 				X.add(new Double(this.samples.get(i)));
 				Y.add(new Double(this.samples.get(i+k)));
 
 				if(this.samples.size() % 2 == 0) {
 					i = i+(k+1);
-					System.out.println(" the value of i"+i);
+					//System.out.println(" the value of i"+i);
 				}else {
 					i = i+k;
-					System.out.println(" the value of i"+i);
+					//System.out.println(" the value of i"+i);
 				}
 
 			}
@@ -250,6 +253,7 @@ public class Test {
 			double e12;
 			int degree=0;
 
+			//calcules les valeurs du X2
 			for (int n = 0; n < X.size(); n++) {
 				//for (int  m= 0; m  < Y.size(); m++) {
 				double rowTotal = X.get(n) + Y.get(n);
@@ -265,20 +269,16 @@ public class Test {
 				sum2+= Math.pow((Y.get(n) - e12),2)/e12;
 
 
-
-				//	System.out.println("X array"+X.get(n));
-				//	System.out.println("Y array"+Y.get(n));
-
-
-				//}
 			}
+
+
 			sum3= sum1+sum2;
 			X2.add(sum3);
 
 			R.add(degree);
 
-			System.out.println("X2: "+X2);
-			System.out.println("degree of freedom: "+R);
+		//	System.out.println("X2: "+X2);
+		//	System.out.println("degree of freedom: "+R);
 			X.clear();
 			Y.clear();
 
@@ -289,7 +289,7 @@ public class Test {
 		}
 
 		//double coefficient = sum1/(Math.sqrt(sum2)*Math.sqrt(sum3));
-		return sum3;
+		return X2;
 	}
 
 
