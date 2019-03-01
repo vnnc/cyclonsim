@@ -39,6 +39,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	@Override
 	public void initGraph(Graph g,int cacheSize,int shuffleLength) {
+
 		this.graph = g;
 		this.cacheSize = cacheSize;
 		this.shuffleLength = shuffleLength;

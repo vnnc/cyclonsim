@@ -11,6 +11,7 @@ public class AlgorithmRandomReference extends AbstractAlgorithm {
 	private Random rng = new Random();
 	private int graphSize;
 
+
 	@Override
 	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength) {
 		this.graphSize = graphSize;
