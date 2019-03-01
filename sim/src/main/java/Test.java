@@ -142,6 +142,8 @@ public class Test {
 			i=i+2;
 		}
 
+
+
 		double Xm = computeMean(X);
 		double Ym = computeMean(Y);
 
@@ -186,5 +188,112 @@ public class Test {
 		Utilities.printDebug("Computed ChiSquare value: "+res);
 		return res;
 	}
+
+	private double computeSum(ArrayList<Double> values){
+
+		double sum = 0;
+		for(Double value : values) {
+			sum+=value;
+		}
+		return sum;
+	}
+
+	public double independence() {
+
+		//System.out.println("Array list: "+this.samples);
+		ArrayList<Double> X = new ArrayList<Double>();
+		ArrayList<Double> Y = new ArrayList<Double>();
+		ArrayList<Double> E = new ArrayList<Double>();
+		ArrayList<Integer> R = new ArrayList<Integer>();
+		ArrayList<Double> X2 = new ArrayList<Double>();
+
+		double sum1 = 0;
+		double sum2 = 0;
+		double sum3 = 0;
+
+
+		int i = 0;
+		int k = 1;
+		while (k <= this.samples.size() - 1) {
+
+			//System.out.println("i: "+i);
+
+			System.out.println("outter");
+			while(i<=this.samples.size()-2 && ((k+i) <= this.samples.size() ) ) {
+				System.out.println("inner");
+				System.out.println("size"+this.samples.size());
+				System.out.println("i: "+i);
+				System.out.println("k: "+k);
+				//System.out.println("i+k: "+i+k);
+				X.add(new Double(this.samples.get(i)));
+				Y.add(new Double(this.samples.get(i+k)));
+
+				if(this.samples.size() % 2 == 0) {
+					i = i+(k+1);
+					System.out.println(" the value of i"+i);
+				}else {
+					i = i+k;
+					System.out.println(" the value of i"+i);
+				}
+
+			}
+			System.out.println("\n");
+
+
+
+			//	System.out.println("Array X: "+X);
+			//	System.out.println("Array Y: "+Y);
+			double Xm = computeSum(X);
+			double Ym = computeSum(Y);
+			double sumTotal = Xm + Ym;
+			double e11;
+			double e12;
+			int degree=0;
+
+			for (int n = 0; n < X.size(); n++) {
+				//for (int  m= 0; m  < Y.size(); m++) {
+				double rowTotal = X.get(n) + Y.get(n);
+
+
+				e11 =  (rowTotal * Xm )/ sumTotal;
+				//r11 = X.get(n) - e11;
+				e12 = (rowTotal * Ym) / sumTotal;
+				//r12 = Y.get(n) - e12;
+
+				degree = (X.size()-1)*(2-1);
+				sum1+= Math.pow((X.get(n) - e11),2)/e11;
+				sum2+= Math.pow((Y.get(n) - e12),2)/e12;
+
+
+
+				//	System.out.println("X array"+X.get(n));
+				//	System.out.println("Y array"+Y.get(n));
+
+
+				//}
+			}
+			sum3= sum1+sum2;
+			X2.add(sum3);
+
+			R.add(degree);
+
+			System.out.println("X2: "+X2);
+			System.out.println("degree of freedom: "+R);
+			X.clear();
+			Y.clear();
+
+			i=0;
+			k = k + 1;
+
+
+		}
+
+		//double coefficient = sum1/(Math.sqrt(sum2)*Math.sqrt(sum3));
+		return sum3;
+	}
+
+
+
+
 }
 

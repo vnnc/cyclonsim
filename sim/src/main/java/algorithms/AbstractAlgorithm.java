@@ -13,7 +13,7 @@ public abstract class AbstractAlgorithm {
 	public abstract void initGraphFromCSV(String path,int cacheSize,int shuffleLength);
 
 	public abstract void initGraph(Graph g,int cacheSize,int shuffleLength);
-	public abstract void initGraph(int n);
+	//public abstract void initGraph(int n);
 //	public abstract void shuffle(int nodeLabel);
 
 	public abstract void shuffleAll();
