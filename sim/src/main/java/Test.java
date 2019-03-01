@@ -199,7 +199,7 @@ public class Test {
 	}
 
 	//pearson test de l'independence
-	public double independence() {
+	public ArrayList<Double> independence() {
 
 		//System.out.println("Array list: "+this.samples);
 		ArrayList<Double> X = new ArrayList<Double>();
