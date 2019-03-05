@@ -40,6 +40,7 @@ public class Test {
 	                        int cacheSize, int shuffleLength, double confidenceLevel) {
 		// Liste contenant les valeurs du test X² calculées
 		ArrayList<Double> distributionValues = new ArrayList<Double>();
+		ArrayList<Double> correlationValues = new ArrayList<Double>();
 		ArrayList<Double> independenceValues = new ArrayList<Double>();
 
 		// Liste contenant les valeurs d'erreur type des valeurs contenues dans "values" => sqrt(variance/n)
@@ -62,8 +63,9 @@ public class Test {
 			n++;
 			this.algorithm.initGraph(initialGraph, cacheSize, shuffleLength);
 			this.genPeerSamples(nodeLabel,peerAmount,shuffleInterval);
-			independenceValues.add(testCorrelation()); //TODO threads
+			correlationValues.add(testCorrelation()); //TODO threads
 			distributionValues.add(testDistribution()); //TODO threads
+			independenceValues.add(testIndependence()); //TODO threads;
 			double err = computeVariance(distributionValues)/n;
 			if (err < 0.000001) {
 				err = 0.0;
@@ -73,20 +75,24 @@ public class Test {
 			//Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
 		} while(standardErrors.get(n-1) > limitValue);
 
-		// Moyenne des valeurs du test X² calculées
-		double chiMean = computeMean(distributionValues);
-		double indepMean = computeMean(independenceValues);
+		System.out.println("independence statistics: "+independenceValues);
 
-		Utilities.printInfo("Mean value of Pearson Correlation Coefficients: "+indepMean);
-		Utilities.printInfo("Mean ChiSquared value: " + chiMean);
-		Utilities.printInfo("Maximum ChiSquared value: " + Collections.max(distributionValues));
-		Utilities.printInfo("Minimum ChiSquared value: " + Collections.min(distributionValues));
+		// Moyenne des valeurs du test X² calculées
+		double chiMeanDistrib = computeMean(distributionValues);
+		double chiMeanIndep = computeMean(independenceValues);
+		double correlMean = computeMean(correlationValues);
+
+		Utilities.printInfo("Mean value of Pearson Correlation Coefficients: "+correlMean);
+		Utilities.printInfo("Mean ChiSquared statistic for distribution: " + chiMeanDistrib);
+		Utilities.printInfo("Mean ChiSquared statistic for independence: " + chiMeanIndep);
+		Utilities.printInfo("Maximum ChiSquared value (Distribution): " + Collections.max(distributionValues));
+		Utilities.printInfo("Minimum ChiSquared value (Distribution): " + Collections.min(distributionValues));
 
 		// Borne supérieure de l'intervalle de confiance selon les valeurs calculées
-		double rightBound = chiMean + limitValue*standardErrors.get(n-1);
+		double rightBound = chiMeanDistrib + limitValue*standardErrors.get(n-1);
 
 		// Borne inférieure de l'intervalle de confiance selon les valeurs calculées
-		double leftBound = chiMean - limitValue*standardErrors.get(n-1);
+		double leftBound = chiMeanDistrib - limitValue*standardErrors.get(n-1);
 
 		// Valeur critique selon la distribution X²
 		double criticalValue = csd.inverseCumulativeProbability(confidenceLevel);
@@ -94,7 +100,23 @@ public class Test {
 		Utilities.printInfo("Expected critical value for ChiSquared distribution: " + criticalValue);
 		Utilities.printInfo("Computed confidence interval: "
 		                    + "[" + leftBound + ", " + rightBound + "]");
-		return (chiMean < criticalValue);
+
+		boolean distribTest;
+		if(chiMeanDistrib < criticalValue){
+			distribTest = true;
+		}else{
+			distribTest = false;
+		}
+		Utilities.printInfo("Maximum ChiSquared value (Independence): " + Collections.max(independenceValues));
+		Utilities.printInfo("Minimum ChiSquared value (Independence): " + Collections.min(independenceValues));
+
+		boolean indepTest;
+		if(chiMeanIndep < criticalValue){
+			indepTest = true;
+		}else{
+			indepTest = false;
+		}
+		return (distribTest && indepTest);
 	}
 
 	private double computeMean(ArrayList<Double> values){
@@ -185,7 +207,7 @@ public class Test {
 			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
 		}
 		res *= this.samples.size();
-		Utilities.printDebug("Computed ChiSquare value: "+res);
+		Utilities.printDebug("Computed ChiSquare value (Distribution): "+res);
 		return res;
 	}
 
@@ -197,103 +219,61 @@ public class Test {
 		}
 		return sum;
 	}
-
-	//pearson test de l'independence
-	public ArrayList<Double> testIndependence() {
-
-		//System.out.println("Array list: "+this.samples);
-		ArrayList<Double> X = new ArrayList<Double>();
-		ArrayList<Double> Y = new ArrayList<Double>();
-		ArrayList<Double> E = new ArrayList<Double>();
-		ArrayList<Integer> R = new ArrayList<Integer>();
-		ArrayList<Double> X2 = new ArrayList<Double>();
-
-		double sum1 = 0;
-		double sum2 = 0;
-		double sum3 = 0;
-
+	private double testIndependence(){
+		ArrayList<Integer> X = new ArrayList<Integer>();
+		ArrayList<Integer> Y = new ArrayList<Integer>();
 
 		int i = 0;
-		int k = 1;
+		while(i<=this.samples.size()-2){
+			X.add(new Integer(this.samples.get(i)));
+			Y.add(new Integer(this.samples.get(i+1)));
+			i=i+2;
+		}
+		HashMap<Integer,Integer> XCounts = new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> YCounts = new HashMap<Integer, Integer>();
 
-		//
-		while (k <= this.samples.size() - 1) {
-
-			//System.out.println("i: "+i);
-
-		//	System.out.println("outter");
-			while(i<=this.samples.size()-2 && ((k+i) <= this.samples.size() ) ) {
-		//		System.out.println("inner");
-		//		System.out.println("size"+this.samples.size());
-		//		System.out.println("i: "+i);
-		//		System.out.println("k: "+k);
-				//System.out.println("i+k: "+i+k);
-				X.add(new Double(this.samples.get(i)));
-				Y.add(new Double(this.samples.get(i+k)));
-
-				if(this.samples.size() % 2 == 0) {
-					i = i+(k+1);
-					//System.out.println(" the value of i"+i);
-				}else {
-					i = i+k;
-					//System.out.println(" the value of i"+i);
-				}
-
+		for(Integer occ : X){
+			if(XCounts.containsKey(occ)){
+				int prev = XCounts.get(occ);
+				XCounts.put(occ,prev+1);
+			}else{
+				XCounts.put(occ,1);
 			}
-			System.out.println("\n");
-
-
-
-			//	System.out.println("Array X: "+X);
-			//	System.out.println("Array Y: "+Y);
-			double Xm = computeSum(X);
-			double Ym = computeSum(Y);
-			double sumTotal = Xm + Ym;
-			double e11;
-			double e12;
-			int degree=0;
-
-			//calcules les valeurs du X2
-			for (int n = 0; n < X.size(); n++) {
-				//for (int  m= 0; m  < Y.size(); m++) {
-				double rowTotal = X.get(n) + Y.get(n);
-
-
-				e11 =  (rowTotal * Xm )/ sumTotal;
-				//r11 = X.get(n) - e11;
-				e12 = (rowTotal * Ym) / sumTotal;
-				//r12 = Y.get(n) - e12;
-
-				degree = (X.size()-1)*(2-1);
-				sum1+= Math.pow((X.get(n) - e11),2)/e11;
-				sum2+= Math.pow((Y.get(n) - e12),2)/e12;
-
-
-			}
-
-
-			sum3= sum1+sum2;
-			X2.add(sum3);
-
-			R.add(degree);
-
-		//	System.out.println("X2: "+X2);
-		//	System.out.println("degree of freedom: "+R);
-			X.clear();
-			Y.clear();
-
-			i=0;
-			k = k + 1;
-
-
 		}
 
-		//double coefficient = sum1/(Math.sqrt(sum2)*Math.sqrt(sum3));
-		return X2;
+		for(Integer occ : Y){
+			if(YCounts.containsKey(occ)){
+				int prev = YCounts.get(occ);
+				YCounts.put(occ,prev+1);
+			}else{
+				YCounts.put(occ,1);
+			}
+		}
+
+		HashMap<Integer,Double> ExpectedCounts = new HashMap<Integer, Double>();
+
+
+		double res = 0;
+		double expectedFreq;
+		int XCountCell;
+		int YCountCell;
+		for(Map.Entry<Integer,Integer> entry : XCounts.entrySet()){
+			XCountCell = (XCounts.containsKey(entry.getKey())) ? XCounts.get(entry.getKey()) : 0;
+			YCountCell = (YCounts.containsKey(entry.getKey())) ? YCounts.get(entry.getKey()) : 0;
+			expectedFreq = (XCountCell + YCountCell)/2.0;
+			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
+		}
+
+		for(Map.Entry<Integer,Integer> entry : YCounts.entrySet()){
+			XCountCell = (XCounts.containsKey(entry.getKey())) ? XCounts.get(entry.getKey()) : 0;
+			YCountCell = (YCounts.containsKey(entry.getKey())) ? YCounts.get(entry.getKey()) : 0;
+			expectedFreq = (XCountCell + YCountCell)/2.0;
+			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
+		}
+
+		Utilities.printDebug("Computed ChiSquare value (Independence): "+res);
+		return res;
 	}
-
-
-
 
 }
 
