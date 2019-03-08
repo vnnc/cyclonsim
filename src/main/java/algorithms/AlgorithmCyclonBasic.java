@@ -11,7 +11,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 	private Graph<SimpleNode, SimpleEdge> graph;
 	private Random rng = new Random();
 	private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
-
+    int counter= 0;
 	// taille du 'cache' dans l'article cyclon
 	private int cacheSize;
 
@@ -48,8 +48,11 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 	@Override
 	public void shuffleAll() {
 		for(int i=0; i<this.graph.vertexSet().size(); i++) {
+
 			this.shuffle(i);
 		}
+		this.counter++;
+		System.out.println("Numbers of suffle "+this.counter);
 	}
 
 	@Override

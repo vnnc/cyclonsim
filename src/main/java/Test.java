@@ -73,10 +73,10 @@ public class Test {
 			standardErrors.add(Math.sqrt(err));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
 			//Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
-		} while(standardErrors.get(n-1) > limitValue);
+		} while(distributionValues.size()<100);
 
 		System.out.println("independence statistics: "+independenceValues);
-
+		System.out.println("taille de la :"+distributionValues.size());
 		// Moyenne des valeurs du test X² calculées
 		double chiMeanDistrib = computeMean(distributionValues);
 		double chiMeanIndep = computeMean(independenceValues);
@@ -222,6 +222,8 @@ public class Test {
 	private double testIndependence(){
 		ArrayList<Integer> X = new ArrayList<Integer>();
 		ArrayList<Integer> Y = new ArrayList<Integer>();
+		ArrayList<Integer> R = new ArrayList<Integer>();
+		int degree=0;
 
 		int i = 0;
 		while(i<=this.samples.size()-2){
@@ -258,9 +260,11 @@ public class Test {
 		int XCountCell;
 		int YCountCell;
 		for(Map.Entry<Integer,Integer> entry : XCounts.entrySet()){
+
 			XCountCell = (XCounts.containsKey(entry.getKey())) ? XCounts.get(entry.getKey()) : 0;
 			YCountCell = (YCounts.containsKey(entry.getKey())) ? YCounts.get(entry.getKey()) : 0;
 			expectedFreq = (XCountCell + YCountCell)/2.0;
+
 			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
 		}
 

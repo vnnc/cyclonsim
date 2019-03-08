@@ -18,7 +18,7 @@ public class Main {
 		final int SHUFFLE_INTERVAL = 1;
 		final int CACHE_SIZE = 6;
 		final int SHUFFLE_LENGTH = 4;
-		final double CONFIDENCE_LEVEL = 0.99;
+		final double CONFIDENCE_LEVEL = 0.90;
 		Test test = new Test(algo, g);
 		boolean reussite = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 		Utilities.printInfo("Le test passe-t-il avec succès ? " + reussite);
