@@ -1,5 +1,6 @@
 import algorithms.*;
 import models.*;
+import tests.TestsMain;
 import utilities.Utilities;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,16 +12,15 @@ public class Main {
 		Utilities.info = true;
 		Utilities.debug = false;
 
-		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
+		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic(); // TODO donner les paramètres à l'algo plutôt qu'aux tests
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("graphs/testgraph3.csv");
-		final int PEER_AMOUNT = 50;
-		final int SHUFFLE_INTERVAL = 1;
+		final int PEER_AMOUNT = 200;
 		final int CACHE_SIZE = 6;
 		final int SHUFFLE_LENGTH = 4;
-		final double CONFIDENCE_LEVEL = 0.99;
-		Test test = new Test(algo, g);
-		boolean reussite = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
+		final double CONFIDENCE_LEVEL = 0.90;
+		TestsMain test = new TestsMain(algo, g);
+		boolean reussite = test.runFullTest(0, PEER_AMOUNT, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 		Utilities.printInfo("Le test passe-t-il avec succès ? " + reussite);
 		Utilities.printInfo((int) (100.0*algo.nbEchanges/(algo.nbEchanges+algo.nbEchecs)) + "% de shuffling");
 		g.exportToCSV("graphs/output.csv");
@@ -32,3 +32,5 @@ public class Main {
 
 	}
 }
+
+

@@ -23,11 +23,5 @@ public abstract class AbstractAlgorithm {
 //	public abstract ArrayList<Integer> getChosenPeers();
 
 	public abstract Graph getGraph();
-
-	public void multiShuffleAll(int amount) {
-		for(int i=0; i<amount; i++) {
-			this.shuffleAll();
-		}
-	}
 }
 

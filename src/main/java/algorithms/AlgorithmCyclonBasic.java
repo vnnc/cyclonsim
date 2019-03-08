@@ -54,6 +54,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	@Override
 	public AbstractNode nextPeer(Integer nodeLabel){
+		this.shuffleAll();
 		Object n = this.getGraph().getNodeByLabel(nodeLabel);
 		ArrayList<SimpleNode> neighbors = this.graph.getNeighborsOfNode((SimpleNode) n);
 		if(neighbors.size() > 0) {
