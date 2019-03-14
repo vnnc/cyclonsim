@@ -52,7 +52,6 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 			this.shuffle(i);
 		}
 		this.counter++;
-		System.out.println("Numbers of suffle "+this.counter);
 	}
 
 	@Override

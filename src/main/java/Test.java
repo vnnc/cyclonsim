@@ -7,6 +7,7 @@ import models.*;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.TDistribution;
+import org.jgrapht.alg.util.Pair;
 import utilities.Utilities;
 import java.util.*;
 
@@ -222,57 +223,42 @@ public class Test {
 	private double testIndependence(){
 		ArrayList<Integer> X = new ArrayList<Integer>();
 		ArrayList<Integer> Y = new ArrayList<Integer>();
-		ArrayList<Integer> R = new ArrayList<Integer>();
-		int degree=0;
+		HashMap<Pair<Integer,Integer>,Integer> counts = new HashMap<Pair<Integer, Integer>, Integer>();
 
 		int i = 0;
 		while(i<=this.samples.size()-2){
-			X.add(new Integer(this.samples.get(i)));
-			Y.add(new Integer(this.samples.get(i+1)));
+			Integer newX = this.samples.get(i);
+			Integer newY = this.samples.get(i+1);
+
+			X.add(newX);
+			Y.add(newY);
 			i=i+2;
-		}
-		HashMap<Integer,Integer> XCounts = new HashMap<Integer, Integer>();
-		HashMap<Integer,Integer> YCounts = new HashMap<Integer, Integer>();
 
-		for(Integer occ : X){
-			if(XCounts.containsKey(occ)){
-				int prev = XCounts.get(occ);
-				XCounts.put(occ,prev+1);
+			Pair<Integer,Integer> xypair = new Pair<Integer, Integer>(newX,newY);
+			if(counts.containsKey(xypair)){
+				Integer prev = counts.get(xypair);
+				counts.put(xypair,prev+1);
 			}else{
-				XCounts.put(occ,1);
+				counts.put(xypair,1);
 			}
 		}
 
-		for(Integer occ : Y){
-			if(YCounts.containsKey(occ)){
-				int prev = YCounts.get(occ);
-				YCounts.put(occ,prev+1);
-			}else{
-				YCounts.put(occ,1);
-			}
-		}
-
-		HashMap<Integer,Double> ExpectedCounts = new HashMap<Integer, Double>();
+		System.out.println("X: "+X);
+		System.out.println("Y: "+Y);
+		System.out.println("Counts: "+counts);
 
 
 		double res = 0;
-		double expectedFreq;
-		int XCountCell;
-		int YCountCell;
-		for(Map.Entry<Integer,Integer> entry : XCounts.entrySet()){
+		double expectedFreq = 1/Math.pow(this.initialGraph.vertexSet().size(),2);
+		double pairCount = X.size();
 
-			XCountCell = (XCounts.containsKey(entry.getKey())) ? XCounts.get(entry.getKey()) : 0;
-			YCountCell = (YCounts.containsKey(entry.getKey())) ? YCounts.get(entry.getKey()) : 0;
-			expectedFreq = (XCountCell + YCountCell)/2.0;
+		for(Map.Entry<Pair<Integer,Integer>,Integer> entry : counts.entrySet()){
 
-			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
-		}
-
-		for(Map.Entry<Integer,Integer> entry : YCounts.entrySet()){
-			XCountCell = (XCounts.containsKey(entry.getKey())) ? XCounts.get(entry.getKey()) : 0;
-			YCountCell = (YCounts.containsKey(entry.getKey())) ? YCounts.get(entry.getKey()) : 0;
-			expectedFreq = (XCountCell + YCountCell)/2.0;
-			res += Math.pow((entry.getValue() - expectedFreq), 2)/expectedFreq;
+			double observed = entry.getValue();
+			double observedFreq = observed/pairCount;
+			res += Math.pow(observedFreq - expectedFreq, 2)/expectedFreq;
+			System.out.println("Pair: "+entry.getKey());
+			System.out.println("observedFreq: "+observedFreq);
 		}
 
 		Utilities.printDebug("Computed ChiSquare value (Independence): "+res);
