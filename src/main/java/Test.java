@@ -239,8 +239,6 @@ public class Test {
 			}
 		}
 
-
-
 		double res = 0;
 		double expectedCount;
 		double pairCount = X.size();
@@ -276,7 +274,6 @@ public class Test {
 				}
 
 				expectedCount = (observedCountFirst*observedCountSecond)/pairCount;
-
 
 				//System.out.println("Pair: " + observedPair);
 				//System.out.println("observed: " + observedCount + " expected: " + expectedCount);

@@ -14,9 +14,9 @@ public class Main {
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("graphs/testgraph3.csv");
-		FileWriter fw = new FileWriter("resultats_shuffle_1.data",false);
+		FileWriter fw = new FileWriter("resultats_shuffle_1.data", false);
 		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIBUTION_CALC,KHI2_DISTRIBUTION_THEO,KHI2_INDEP_CALC,KHI2_INDEP_THEO");
+		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIB_CALC,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_CALC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC");
 		bw.write(System.getProperty("line.separator"));
 		final int PEER_AMOUNT = 400;
 		int SHUFFLE_INTERVAL;
@@ -31,9 +31,7 @@ public class Main {
 			for(int i=0; i<5; i++) {
 				TestResults res = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 				double shuffleAmount = PEER_AMOUNT * SHUFFLE_INTERVAL;
-				String line = id + "," + shuffleAmount + "," + res.getMeanDistrib();
-				line = line + "," + res.getExpectedDistrib() + "," + res.getMeanIndep();
-				line = line + "," + res.getExpectedIndep();
+				String line = id + "," + shuffleAmount + "," + res.getString();
 				bw.write(line);
 				bw.write(System.getProperty("line.separator"));
 				bw.flush();

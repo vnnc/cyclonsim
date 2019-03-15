@@ -30,13 +30,21 @@ public class TestResults {
 	public double getExpectedIndep() {
 		return expectedIndep;
 	}
-	
+
 	public boolean getDistributionSucceeded () {
-		return this.chiMeanDistrib < this.criticalValueDistrib;
+		return this.meanDistrib < this.expectedDistrib;
 	}
-	
+
 	public boolean getIndependencySucceeded () {
-		return this.chiMeanIndep < this.criticalValueIndep;
+		return this.meanIndep < this.expectedIndep;
+	}
+
+	public String getString () {
+		String line = this.getMeanDistrib() + "," + this.getExpectedDistrib();
+		line = line + "," + this.getDistributionSucceeded();
+		line = line + "," + this.getMeanIndep() + "," + this.getExpectedIndep();
+		line = line + "," + this.getIndependencySucceeded();
+		return line;
 	}
 }
 
