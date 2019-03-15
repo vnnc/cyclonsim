@@ -3,6 +3,7 @@ import models.*;
 import utilities.TestResults;
 import utilities.Utilities;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,8 +16,9 @@ public class Main {
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("graphs/testgraph3.csv");
 		FileWriter fw = new FileWriter("resultats_shuffle_1.data",false);
-		fw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIBUTION_CALC,KHI2_DISTRIBUTION_THEO,KHI2_INDEP_CALC,KHI2_INDEP_THEO");
-		fw.write(System.getProperty("line.separator"));
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIBUTION_CALC,KHI2_DISTRIBUTION_THEO,KHI2_INDEP_CALC,KHI2_INDEP_THEO");
+		bw.write(System.getProperty("line.separator"));
 		final int PEER_AMOUNT = 400;
 		int SHUFFLE_INTERVAL;
 		final int CACHE_SIZE = 6;
@@ -27,18 +29,19 @@ public class Main {
 
 		int id = 1;
 
-		for(SHUFFLE_INTERVAL=1;SHUFFLE_INTERVAL<=10;SHUFFLE_INTERVAL++){
-			for(int i=0;i<10;i++) {
+		for(SHUFFLE_INTERVAL=1;SHUFFLE_INTERVAL<=5;SHUFFLE_INTERVAL++){
+			for(int i=0;i<5;i++) {
 
 				TestResults res = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 				double shuffleAmount = PEER_AMOUNT * SHUFFLE_INTERVAL;
 				String line = id+","+shuffleAmount+","+res.getMeanDistrib()+","+res.getExpectedDistrib()+","+res.getMeanIndep()+","+res.getExpectedIndep();
-				fw.write(line);
-				fw.write(System.getProperty("line.separator"));
+				bw.write(line);
+				bw.write(System.getProperty("line.separator"));
+				bw.flush();
 				id++;
 			}
 		}
-
+		bw.close();
 		fw.close();
 
 	}
