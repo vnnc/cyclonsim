@@ -26,15 +26,15 @@ public class Test {
 	}
 
 	/**
-	 * @param nodeLabel label (étiquette) du noeud du graphe qui est observé dans le test
+	 * @param nodeLabel label (étiquette) du nœud du graphe qui est observé dans le test
 	 * @param peerAmount nombre d'appels de nextPeer par calcul de valeur du test X²
 	 * @see AbstractAlgorithm#nextPeer(Integer)
 	 * @see #testDistribution()
-	 * @param shuffleInterval nombre de shuffle sur tout les noeuds du graph entre
-	 *                        chaque appel de nextPeer. Exemple: Si shuffleInterval
+	 * @param shuffleInterval nombre de shuffle sur tout les nœuds du graphe entre
+	 *                        chaque appel de nextPeer. Exemple: si shuffleInterval
 	 *                        vaut 5, entre chaque appel de nextPeer dans la méthode
 	 *                        de calcul du test X² le graph passera par 5 shuffle
-	 * @param cacheSize taille maximale de la vue partielle d'un noeud du graphe
+	 * @param cacheSize taille maximale de la vue partielle d'un nœud du graphe
 	 * @param shuffleLength taille du sous-ensemble de la vue partielle considérée lors d'un shuffle
 	 * @param confidenceLevel niveau de confiance, exemple: si ça vaut 0.98, une
 	 *                        valeur qui suit la loi de distribution a 98% de
@@ -69,7 +69,7 @@ public class Test {
 			standardErrors.add(Math.sqrt(err));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
 			//Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
-		} while(distributionValues.size()<50);
+		} while(distributionValues.size() < 50);
 
 		// Moyenne des valeurs du test X² calculées
 		double chiMeanDistrib = computeMean(distributionValues);
@@ -85,7 +85,6 @@ public class Test {
 		double criticalValueDistrib = csd.inverseCumulativeProbability(confidenceLevel);
 		Utilities.printInfo("Expected critical value for distribution test: " + criticalValueDistrib);
 
-
 		Utilities.printInfo("Mean ChiSquared statistic for independence: " + chiMeanIndep);
 		Utilities.printInfo("Maximum ChiSquared value (Independence): " + Collections.max(independenceValues));
 		Utilities.printInfo("Minimum ChiSquared value (Independence): " + Collections.min(independenceValues));
@@ -93,23 +92,7 @@ public class Test {
 		double criticalValueIndep = csdi.inverseCumulativeProbability(confidenceLevel);
 		Utilities.printInfo("Expected critical value for independence test: " + criticalValueIndep);
 
-
-
-		boolean distribTest;
-		if(chiMeanDistrib < criticalValueDistrib){
-			distribTest = true;
-		}else{
-			distribTest = false;
-		}
-
-
-		boolean indepTest;
-		if(chiMeanIndep < criticalValueIndep){
-			indepTest = true;
-		}else{
-			indepTest = false;
-		}
-		return  new TestResults(chiMeanDistrib,criticalValueDistrib,chiMeanIndep,criticalValueIndep);
+		return new TestResults(chiMeanDistrib, criticalValueDistrib, chiMeanIndep, criticalValueIndep);
 	}
 
 	private double computeMean(ArrayList<Double> values){
@@ -151,10 +134,10 @@ public class Test {
 		ArrayList<Double> Y = new ArrayList<Double>();
 
 		int i = 0;
-		while(i<=this.samples.size()-2){
+		while(i <= this.samples.size()-2){
 			X.add(new Double(this.samples.get(i)));
 			Y.add(new Double(this.samples.get(i+1)));
-			i=i+2;
+			i = i+2;
 		}
 
 
@@ -185,8 +168,8 @@ public class Test {
 
 		HashMap<Integer, Double> counts = new HashMap<Integer, Double>();
 
-		for(int i=1;i<graphSize;i++){
-			counts.put(i,0.0);
+		for(int i=1; i<graphSize; i++){
+			counts.put(i, 0.0);
 		}
 
 		for(Integer occ : this.samples) {
@@ -212,15 +195,14 @@ public class Test {
 		return sum;
 	}
 	private double testIndependence(){
-
-		// Variables aléatoires X et Y pour le test d'independance
-
 		int graphSize = this.initialGraph.vertexSet().size();
+		
+		// Variables aléatoires X et Y pour le test d'independance
 		ArrayList<Integer> X = new ArrayList<Integer>();
 		ArrayList<Integer> Y = new ArrayList<Integer>();
 
 		// Table de comptage des paires de valeurs (Xi,Yi)
-		HashMap<Pair<Integer,Integer>,Integer> counts = new HashMap<Pair<Integer, Integer>, Integer>();
+		HashMap<Pair<Integer, Integer>, Integer> counts = new HashMap<Pair<Integer, Integer>, Integer>();
 
 		HashMap<Integer,Integer> XCounts = new HashMap<Integer, Integer>();
 		HashMap<Integer,Integer> YCounts = new HashMap<Integer, Integer>();
@@ -234,25 +216,25 @@ public class Test {
 			Y.add(newY);
 			i=i+2;
 
-			if(XCounts.containsKey(newX)){
+			if (XCounts.containsKey(newX)) {
 				Integer prev = XCounts.get(newX);
 				XCounts.put(newX,prev+1);
-			}else{
+			} else {
 				XCounts.put(newX,1);
 			}
 
-			if(YCounts.containsKey(newY)){
+			if (YCounts.containsKey(newY)) {
 				Integer prev = YCounts.get(newY);
 				YCounts.put(newY,prev+1);
-			}else{
+			} else {
 				YCounts.put(newY,1);
 			}
 
 			Pair<Integer,Integer> xypair = new Pair<Integer, Integer>(newX,newY);
-			if(counts.containsKey(xypair)){
+			if (counts.containsKey(xypair)) {
 				Integer prev = counts.get(xypair);
 				counts.put(xypair,prev+1);
-			}else{
+			} else {
 				counts.put(xypair,1);
 			}
 		}
@@ -271,26 +253,25 @@ public class Test {
 //		System.out.println("Y: "+Y);
 //		System.out.println("Counts: "+counts);
 
-		for(i=1;i<graphSize;i++){
-
-			for(int j=1;j<graphSize;j++){
+		for(i=1; i<graphSize; i++){
+			for(int j=1; j<graphSize; j++){
 
 				observedPair = new Pair(i,j);
-				if(counts.containsKey(observedPair)){
+				if (counts.containsKey(observedPair)) {
 					observedCount = counts.get(observedPair);
-				}else{
+				} else {
 					observedCount = 0;
 				}
 
-				if(XCounts.containsKey(observedPair.getFirst())) {
+				if (XCounts.containsKey(observedPair.getFirst())) {
 					observedCountFirst = XCounts.get(observedPair.getFirst());
-				}else{
+				} else {
 					observedCountFirst = 0;
 				}
 
-				if(YCounts.containsKey(observedPair.getSecond())){
+				if (YCounts.containsKey(observedPair.getSecond())) {
 					observedCountSecond = YCounts.get(observedPair.getSecond());
-				}else{
+				} else {
 					observedCountSecond = 0;
 				}
 
@@ -299,7 +280,7 @@ public class Test {
 
 				//System.out.println("Pair: " + observedPair);
 				//System.out.println("observed: " + observedCount + " expected: " + expectedCount);
-				if(expectedCount!=0) {
+				if (expectedCount!=0) {
 					res += Math.pow(observedCount - expectedCount, 2) / expectedCount;
 				}
 				//System.out.println("Cumul: " + res);

@@ -10,8 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Main {
 
-	public static void procedureTest1() throws IOException
-	{
+	public static void procedureTest1() throws IOException {
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("graphs/testgraph3.csv");
@@ -24,17 +23,17 @@ public class Main {
 		final int CACHE_SIZE = 6;
 		final int SHUFFLE_LENGTH = 4;
 		final double CONFIDENCE_LEVEL = 0.90;
-
-		Test test = new Test(algo,g);
-
+		
+		Test test = new Test(algo, g);
 		int id = 1;
-
-		for(SHUFFLE_INTERVAL=1;SHUFFLE_INTERVAL<=5;SHUFFLE_INTERVAL++){
-			for(int i=0;i<5;i++) {
-
+		
+		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=5; SHUFFLE_INTERVAL++) {
+			for(int i=0; i<5; i++) {
 				TestResults res = test.runFullTest(0, PEER_AMOUNT, SHUFFLE_INTERVAL, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
 				double shuffleAmount = PEER_AMOUNT * SHUFFLE_INTERVAL;
-				String line = id+","+shuffleAmount+","+res.getMeanDistrib()+","+res.getExpectedDistrib()+","+res.getMeanIndep()+","+res.getExpectedIndep();
+				String line = id + "," + shuffleAmount + "," + res.getMeanDistrib();
+				line = line + "," + res.getExpectedDistrib() + "," + res.getMeanIndep();
+				line = line + "," + res.getExpectedIndep();
 				bw.write(line);
 				bw.write(System.getProperty("line.separator"));
 				bw.flush();
@@ -43,11 +42,9 @@ public class Main {
 		}
 		bw.close();
 		fw.close();
-
 	}
-	public static void main(String args[])
-	{
-
+	
+	public static void main(String args[]) {
 		Utilities.info = true;
 		Utilities.debug = false;
 
@@ -83,6 +80,6 @@ public class Main {
 //		Test test = new Test(ref,g);
 //		test.runFullTest(0,PEER_AMOUNT,SHUFFLE_INTERVAL,CACHE_SIZE,SHUFFLE_LENGTH,CONFIDENCE_LEVEL);
 
-
 	}
 }
+
