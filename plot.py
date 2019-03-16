@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 import matplotlib.pyplot as plt, csv, pandas, numpy
 
-filename = input("Fichier: ")
-data = pandas.read_csv(filename,sep=",")
+if len(sys.argv) == 1:
+	filename = input("Fichier: ")
+else:
+	filename = sys.argv[1]
+filename = str(filename)
+
+data = pandas.read_csv(filename, sep=",")
 nbshuffle = data["NOMBRE_SHUFFLE"].tolist()
 
 distriobs = data["KHI2_DISTRIB_CALC"].tolist()

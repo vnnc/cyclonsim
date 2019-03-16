@@ -1,4 +1,4 @@
 .idea
 /target
 graphs/output.csv
-/*.data
+/*.csv

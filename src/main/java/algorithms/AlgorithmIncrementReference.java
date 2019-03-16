@@ -31,9 +31,6 @@ public class AlgorithmIncrementReference extends AbstractAlgorithm {
 	}
 
 	@Override
-	public void shuffleAll() {}
-
-	@Override
 	public AbstractNode nextPeer(Integer label){
 		AbstractNode node = new SimpleNode((this.cpt++)%this.graphSize);
 		return node;

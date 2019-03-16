@@ -11,19 +11,22 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 	private Graph<SimpleNode, SimpleEdge> graph;
 	private Random rng = new Random();
 	private ArrayList<Integer> chosenPeers = new ArrayList<Integer>();
-    int counter= 0;
+	int counter= 0;
 	// taille du 'cache' dans l'article cyclon
 	private int cacheSize;
 
 	// l dans l'article cyclon
 	private int shuffleLength;
 	
+	private int shuffleInterval = 1;
+	
 	public static int nbEchanges = 0;
 	public static int nbEchecs = 0;
 
 	@Override
-	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class,SimpleEdge.class);
+	public void initRandomGraph(int graphSize, int cacheSize, int shuffleLength)
+	throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+		this.graph = new Graph<SimpleNode, SimpleEdge>(SimpleNode.class, SimpleEdge.class);
 		this.graph.generateRandom(graphSize, cacheSize);
 		this.cacheSize = cacheSize;
 		this.shuffleLength = shuffleLength;
@@ -31,7 +34,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	@Override
 	public void initGraphFromCSV(String path,int cacheSize,int shuffleLength) {
-		this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class,SimpleEdge.class);
+		this.graph = new Graph<SimpleNode,SimpleEdge>(SimpleNode.class, SimpleEdge.class);
 		this.graph.importFromCSV(path);
 		this.cacheSize = cacheSize;
 		this.shuffleLength = shuffleLength;
@@ -39,16 +42,13 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	@Override
 	public void initGraph(Graph g,int cacheSize,int shuffleLength) {
-
 		this.graph = g;
 		this.cacheSize = cacheSize;
 		this.shuffleLength = shuffleLength;
 	}
 
-	@Override
 	public void shuffleAll() {
 		for(int i=0; i<this.graph.vertexSet().size(); i++) {
-
 			this.shuffle(i);
 		}
 		this.counter++;
@@ -56,9 +56,13 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	@Override
 	public AbstractNode nextPeer(Integer nodeLabel){
+		for (int i=0; i<this.shuffleInterval; i++) {
+			this.shuffleAll();
+		}
+		
 		Object n = this.getGraph().getNodeByLabel(nodeLabel);
 		ArrayList<SimpleNode> neighbors = this.graph.getNeighborsOfNode((SimpleNode) n);
-		if(neighbors.size() > 0) {
+		if (neighbors.size() > 0) {
 			Random r = new Random();
 			int index = r.nextInt(neighbors.size());
 			return neighbors.get(index);
@@ -67,7 +71,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		}
 	}
 
-	private ArrayList<SimpleNode> getRandomSubset(ArrayList<SimpleNode> nodes,int size) {
+	private ArrayList<SimpleNode> getRandomSubset(ArrayList<SimpleNode> nodes, int size) {
 		ArrayList<SimpleNode> subset = new ArrayList<SimpleNode>();
 		subset.addAll(nodes);
 		Collections.shuffle(subset);
@@ -131,17 +135,14 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		ArrayList<SimpleNode> disposables = new ArrayList<SimpleNode>(subsetForPeerQ);
 		disposables.remove(nodeP);
 
-
 		for (SimpleNode n : peerQNeighborsSubset) {
 			n = this.graph.getNodeByLabel(n.getLabel());
 
 			if (this.graph.getEdge(n, nodeP) == null
 			&& this.graph.getEdge(nodeP, n) == null
 			&& nodeP != n) {
-				if(nodePNeighbors.size()<cacheSize){
-
+				if(nodePNeighbors.size() < cacheSize){
 					nodePKeptEntries.add(n);
-
 					this.graph.addEdge(nodeP,n);
 
 					newEdges.add(this.graph.getEdge(nodeP,n));
@@ -210,6 +211,10 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 			this.nbEchanges++;
 		}
 	}
+	
+	public void setInterval(int shuffleInterval) {
+		this.shuffleInterval = shuffleInterval;
+	}
 
 	//@Override
 	public ArrayList<Integer> getChosenPeers() {
@@ -217,8 +222,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 	}
 
 	@Override
-	public Graph getGraph()
-	{
+	public Graph getGraph() {
 		return this.graph;
 	}
 }

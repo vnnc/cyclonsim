@@ -1,4 +1,4 @@
-package utilities;
+package tests;
 
 public class TestResults {
 
