@@ -8,9 +8,11 @@ import org.apache.commons.math3.distribution.TDistribution;
 import org.jgrapht.alg.util.Pair;
 import utilities.Utilities;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-
+import java.io.IOException;
 public class Tests {
 
 	private Graph initialGraph;
@@ -32,7 +34,7 @@ public class Tests {
 	 *                        valeur qui suit la loi de distribution a 98% de
 	 *                        chance de se trouver dans l'intervalle de confiance
 	 */
-	public TestResults runFullTest(int sampleSize, int cacheSize, int shuffleLength, double confidenceLevel) {
+	public TestResults runFullTest(int sampleSize, int cacheSize, int shuffleLength, double confidenceLevel) throws IOException {
 
 		int graphSize = this.initialGraph.vertexSet().size();
 		// Liste contenant les valeurs du test X² calculées
@@ -45,7 +47,14 @@ public class Tests {
 
 		ChiSquaredDistribution csd = new ChiSquaredDistribution(graphSize-1);
 		ChiSquaredDistribution csdi = new ChiSquaredDistribution(Math.pow(graphSize, 2));
+		FileWriter fw = new FileWriter("resultats_1.csv", false);
+		BufferedWriter bw = new BufferedWriter(fw);
+
+		bw.write("ID,NOMBRE_SHUFFLE,Correlation,Distribution,Independence");
+		bw.write(System.getProperty("line.separator"));
 		int n = 0;
+		int id = 1;
+
 		do {
 			n++;
 			this.algorithm.initGraph((Graph) initialGraph.clone(), cacheSize, shuffleLength);
@@ -53,6 +62,15 @@ public class Tests {
 			correlationValues.add(testCorrelation());
 			distributionValues.add(testDistribution());
 			independenceValues.add(testIndependence());
+
+
+			String line = id + "," + shuffleLength + "," + testCorrelation()+","+testDistribution()+","+testIndependence();
+			bw.write(line);
+			bw.write(System.getProperty("line.separator"));
+			bw.flush();
+			id++;
+
+
 			double err = computeVariance(distributionValues)/n;
 			if (err < 0.000001) {
 				err = 0.0;

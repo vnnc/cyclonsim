@@ -15,9 +15,12 @@ public class Main {
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("graphs/testgraph3.csv");
 		FileWriter fw = new FileWriter("resultats_shuffle_1.csv", false);
+
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIB_CALC,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_CALC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC");
 		bw.write(System.getProperty("line.separator"));
+
+
 		final int SAMPLE_SIZE = 50;
 		int SHUFFLE_INTERVAL;
 		final int CACHE_SIZE = 6;
