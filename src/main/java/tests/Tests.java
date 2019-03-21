@@ -42,18 +42,17 @@ public class Tests {
 		ArrayList<Double> correlationValues = new ArrayList<Double>();
 		ArrayList<Double> independenceValues = new ArrayList<Double>();
 
+		ArrayList<Double> distValues = new ArrayList<Double>();
+		ArrayList<Double> indValues = new ArrayList<Double>();
+
 		// Liste contenant les valeurs d'erreur type des valeurs contenues dans "values" => sqrt(variance/n)
 		ArrayList<Double> standardErrors = new ArrayList<Double>();
 
 		ChiSquaredDistribution csd = new ChiSquaredDistribution(graphSize-1);
 		ChiSquaredDistribution csdi = new ChiSquaredDistribution(Math.pow(graphSize, 2));
-		FileWriter fw = new FileWriter("resultats_1.csv", false);
-		BufferedWriter bw = new BufferedWriter(fw);
 
-		bw.write("ID,NOMBRE_SHUFFLE,Correlation,Distribution,Independence");
-		bw.write(System.getProperty("line.separator"));
 		int n = 0;
-		int id = 1;
+
 
 		do {
 			n++;
@@ -63,13 +62,12 @@ public class Tests {
 			distributionValues.add(testDistribution());
 			independenceValues.add(testIndependence());
 
+			distValues.add(testDistribution());
+			indValues.add(testIndependence());
 
-			String line = id + "," + shuffleLength + "," + testCorrelation()+","+testDistribution()+","+testIndependence();
-			bw.write(line);
-			bw.write(System.getProperty("line.separator"));
-			bw.flush();
-			id++;
 
+
+			//new TestResults(testIndependence(),testDistribution());
 
 			double err = computeVariance(distributionValues)/n;
 			if (err < 0.000001) {
@@ -78,6 +76,7 @@ public class Tests {
 			standardErrors.add(Math.sqrt(err));
 			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
 			//Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
+
 		} while(distributionValues.size() < 50);
 
 		// Moyenne des valeurs du test X² calculées
@@ -101,7 +100,7 @@ public class Tests {
 		double criticalValueIndep = csdi.inverseCumulativeProbability(confidenceLevel);
 		Utilities.printInfo("Expected critical value for independence test: " + criticalValueIndep);
 
-		return new TestResults(chiMeanDistrib, criticalValueDistrib, chiMeanIndep, criticalValueIndep);
+		return new TestResults(chiMeanDistrib, criticalValueDistrib, chiMeanIndep, criticalValueIndep,distValues,indValues);
 	}
 
 	private double computeMean(ArrayList<Double> values) {

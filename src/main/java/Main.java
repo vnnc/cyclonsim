@@ -17,7 +17,7 @@ public class Main {
 		FileWriter fw = new FileWriter("resultats_shuffle_1.csv", false);
 
 		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIB_CALC,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_CALC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC");
+		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIB_CALC,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_CALC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC,KHI2_INDEP_VALUE,KHI2_DIST_VALUE");
 		bw.write(System.getProperty("line.separator"));
 
 
