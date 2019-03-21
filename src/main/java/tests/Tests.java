@@ -34,48 +34,37 @@ public class Tests {
 	 *                        valeur qui suit la loi de distribution a 98% de
 	 *                        chance de se trouver dans l'intervalle de confiance
 	 */
-	public TestResults runFullTest(int sampleSize, int cacheSize, int shuffleLength, double confidenceLevel) throws IOException {
+	public TestResults runFullTest(int sampleSize, int cacheSize, int shuffleLength,
+	                                double confidenceLevel) throws IOException {
 
 		int graphSize = this.initialGraph.vertexSet().size();
 		// Liste contenant les valeurs du test X² calculées
 		ArrayList<Double> distributionValues = new ArrayList<Double>();
 		ArrayList<Double> correlationValues = new ArrayList<Double>();
 		ArrayList<Double> independenceValues = new ArrayList<Double>();
-
-		ArrayList<Double> distValues = new ArrayList<Double>();
-		ArrayList<Double> indValues = new ArrayList<Double>();
-
-		// Liste contenant les valeurs d'erreur type des valeurs contenues dans "values" => sqrt(variance/n)
-		ArrayList<Double> standardErrors = new ArrayList<Double>();
+		
+//		ArrayList<Double> standardErrors = new ArrayList<Double>();
 
 		ChiSquaredDistribution csd = new ChiSquaredDistribution(graphSize-1);
 		ChiSquaredDistribution csdi = new ChiSquaredDistribution(Math.pow(graphSize-1, 2));
 
-		int n = 0;
-
-
+//		int n = 0;
 		do {
-			n++;
 			this.algorithm.initGraph((Graph) initialGraph.clone(), cacheSize, shuffleLength);
 			this.samples = this.algorithm.getTestSample(sampleSize);
 			correlationValues.add(testCorrelation());
 			distributionValues.add(testDistribution());
 			independenceValues.add(testIndependence());
 
-			distValues.add(testDistribution());
-			indValues.add(testIndependence());
-
-
-
-			//new TestResults(testIndependence(),testDistribution());
-
-			double err = computeVariance(distributionValues)/n;
-			if (err < 0.000001) {
-				err = 0.0;
-			}
-			standardErrors.add(Math.sqrt(err));
-			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
-			//Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
+			// On se fout désormais complètement de l'erreur standard ?
+//			n++;
+//			double err = computeVariance(distributionValues)/n;
+//			if (err < 0.000001) {
+//				err = 0.0;
+//			}
+//			standardErrors.add(Math.sqrt(err));
+//			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
+		//	Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
 
 		} while(distributionValues.size() < 50);
 
@@ -84,23 +73,24 @@ public class Tests {
 		double chiMeanIndep = computeMean(independenceValues);
 		double correlMean = computeMean(correlationValues);
 
-		Utilities.printInfo("Mean value of Pearson Correlation Coefficients: "+correlMean);
+		Utilities.printInfo("Mean value of Pearson Correlation Coefficients: " + correlMean);
 
-		Utilities.printInfo("Mean ChiSquared statistic for distribution: " + chiMeanDistrib);
-		Utilities.printInfo("Maximum ChiSquared value (Distribution): " + Collections.max(distributionValues));
-		Utilities.printInfo("Minimum ChiSquared value (Distribution): " + Collections.min(distributionValues));
+		Utilities.printInfo("Mean Χ² statistic for distribution: " + chiMeanDistrib);
+		Utilities.printInfo("Maximum Χ² value (Distribution): " + Collections.max(distributionValues));
+		Utilities.printInfo("Minimum Χ² value (Distribution): " + Collections.min(distributionValues));
 
 		double criticalValueDistrib = csd.inverseCumulativeProbability(confidenceLevel);
 		Utilities.printInfo("Expected critical value for distribution test: " + criticalValueDistrib);
 
-		Utilities.printInfo("Mean ChiSquared statistic for independence: " + chiMeanIndep);
-		Utilities.printInfo("Maximum ChiSquared value (Independence): " + Collections.max(independenceValues));
-		Utilities.printInfo("Minimum ChiSquared value (Independence): " + Collections.min(independenceValues));
+		Utilities.printInfo("Mean Χ² statistic for independence: " + chiMeanIndep);
+		Utilities.printInfo("Maximum Χ² value (Independence): " + Collections.max(independenceValues));
+		Utilities.printInfo("Minimum Χ² value (Independence): " + Collections.min(independenceValues));
 
 		double criticalValueIndep = csdi.inverseCumulativeProbability(confidenceLevel);
 		Utilities.printInfo("Expected critical value for independence test: " + criticalValueIndep);
 
-		return new TestResults(chiMeanDistrib, criticalValueDistrib, chiMeanIndep, criticalValueIndep,distValues,indValues);
+		return new TestResults(chiMeanDistrib, criticalValueDistrib, chiMeanIndep,
+		            criticalValueIndep, distributionValues, independenceValues);
 	}
 
 	private double computeMean(ArrayList<Double> values) {

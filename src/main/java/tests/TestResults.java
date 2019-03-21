@@ -12,15 +12,15 @@ public class TestResults {
 	private ArrayList<Double> indValues = new ArrayList<Double>();
 
 	public TestResults(double meanDistrib, double expectedDistrib,
-	                   double meanIndep, double expectedIndep, ArrayList<Double> independence,ArrayList<Double> distribution) {
+	                   double meanIndep, double expectedIndep,
+	                   ArrayList<Double> independence, ArrayList<Double> distribution) {
 		this.meanDistrib = meanDistrib;
 		this.expectedDistrib = expectedDistrib;
 		this.meanIndep = meanIndep;
 		this.expectedIndep = expectedIndep;
 		this.indValues = independence;
-		this.distValues =distribution;
+		this.distValues = distribution;
 	}
-
 
 	public ArrayList<Double> getIndepValues() {
 		return indValues;
