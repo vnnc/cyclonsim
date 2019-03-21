@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -14,12 +15,18 @@ public class Main {
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
 		g.importFromCSV("graphs/testgraph3.csv");
-		FileWriter fw = new FileWriter("resultats_shuffle_1.csv", false);
+
+		final String FILE_NUMBER = "1";
+		FileWriter fw = new FileWriter("statistical_data/resultats_shuffle_"+FILE_NUMBER+".csv", false);
+		FileWriter fw2 = new FileWriter("statistical_data/annexe_resultats_"+FILE_NUMBER+".csv",false);
 
 		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write("ID,NOMBRE_SHUFFLE,KHI2_DISTRIB_CALC,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_CALC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC,KHI2_INDEP_VALUE,KHI2_DIST_VALUE");
+		bw.write("ID,SHUFFLE_INTERVAL,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC");
 		bw.write(System.getProperty("line.separator"));
 
+		BufferedWriter bw2 = new BufferedWriter(fw2);
+		bw2.write("SHUFFLE_INTERVAL,DIST_VALUE,INDEP_VALUE");
+		bw2.write(System.getProperty("line.separator"));
 
 		final int SAMPLE_SIZE = 50;
 		int SHUFFLE_INTERVAL;
@@ -29,21 +36,33 @@ public class Main {
 		
 		Tests test = new Tests(algo, g);
 		int id = 1;
+
+		final int MAX_INTERVAL = 2;
 		
-		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=5; SHUFFLE_INTERVAL++) {
+		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) {
 			algo.setInterval(SHUFFLE_INTERVAL);
-			for(int i=0; i<5; i++) {
-				TestResults res = test.runFullTest(SAMPLE_SIZE, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
-				double shuffleAmount = SAMPLE_SIZE * SHUFFLE_INTERVAL;
-				String line = id + "," + shuffleAmount + "," + res.getString();
-				bw.write(line);
-				bw.write(System.getProperty("line.separator"));
-				bw.flush();
-				id++;
+			TestResults res = test.runFullTest(SAMPLE_SIZE, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
+			String line = id + "," + SHUFFLE_INTERVAL + "," + res.getString();
+			bw.write(line);
+			bw.write(System.getProperty("line.separator"));
+			bw.flush();
+
+			ArrayList<Double> distributionValues = res.getDistribValues();
+			ArrayList<Double> independenceValues = res.getIndepValues();
+
+			for(int k=0;k<distributionValues.size();k++){
+				line = id+","+distributionValues.get(k)+","+independenceValues.get(k);
+				bw2.write(line);
+				bw2.write(System.getProperty("line.separator"));
+				bw2.flush();
 			}
+
+			id++;
 		}
 		bw.close();
+		bw2.close();
 		fw.close();
+		fw2.close();
 	}
 	
 	public static void main(String args[]) {

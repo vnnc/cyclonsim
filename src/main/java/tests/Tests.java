@@ -49,7 +49,7 @@ public class Tests {
 		ArrayList<Double> standardErrors = new ArrayList<Double>();
 
 		ChiSquaredDistribution csd = new ChiSquaredDistribution(graphSize-1);
-		ChiSquaredDistribution csdi = new ChiSquaredDistribution(Math.pow(graphSize, 2));
+		ChiSquaredDistribution csdi = new ChiSquaredDistribution(Math.pow(graphSize-1, 2));
 
 		int n = 0;
 

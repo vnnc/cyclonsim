@@ -8,8 +8,6 @@ public class TestResults {
 	private double expectedDistrib;
 	private double meanIndep;
 	private double expectedIndep;
-	private double distribution;
-	private double independence;
 	private ArrayList<Double> distValues = new ArrayList<Double>();
 	private ArrayList<Double> indValues = new ArrayList<Double>();
 
@@ -23,48 +21,17 @@ public class TestResults {
 		this.distValues =distribution;
 	}
 
-	public TestResults(double independence, double distribution
-					   ) {
-		System.out.println("Testresult is called");
-		this.independence = independence;
-		this.distribution = distribution;
 
-	}
-
-
-
-	public double getIndependence() {
-		return independence;
-	}
-
-	public double getDistribution() {
-		return distribution;
-	}
-
-
-
-	public ArrayList<Double> getInd() {
+	public ArrayList<Double> getIndepValues() {
 		return indValues;
 	}
 
-	public ArrayList<Double> getDist() {
+	public ArrayList<Double> getDistribValues() {
 		return distValues;
-	}
-
-
-	public double getMeanDistrib() {
-		return meanDistrib;
 	}
 
 	public double getExpectedDistrib() {
 		return expectedDistrib;
-	}
-
-
-
-
-	public double getMeanIndep() {
-		return meanIndep;
 	}
 
 	public double getExpectedIndep() {
@@ -80,19 +47,13 @@ public class TestResults {
 	}
 
 	public String getString () {
-		String line = this.getMeanDistrib() + "," + this.getExpectedDistrib();
+		String line = "" + this.getExpectedDistrib();
 		line = line + "," + this.getDistributionSucceeded();
-		line = line + "," + this.getMeanIndep() + "," + this.getExpectedIndep();
+		line = line + "," + this.getExpectedIndep();
 		line = line + "," + this.getIndependencySucceeded();
-		line = line + "," + this.getInd() + "," + this.getDist();
 		return line;
 	}
 
-	public String getStringValues () {
-
-		String line = this.getDistribution() + "," + this.getIndependence();
-		return line;
-	}
 }
 
 
