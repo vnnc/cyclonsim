@@ -14,7 +14,7 @@ public class Main {
 	public static void procedureTestCyclon() throws IOException {
 		AlgorithmCyclonBasic algo = new AlgorithmCyclonBasic();
 		Graph g = new Graph(SimpleNode.class, SimpleEdge.class);
-		g.importFromCSV("graphs/testgraph3.csv");
+		g.importFromCSV("graphs/testgraph4.csv");
 
 		final String FILE_NUMBER = "1";
 		FileWriter fw = new FileWriter("statistical_data/resultats_shuffle_"+FILE_NUMBER+".csv", false);
@@ -28,16 +28,16 @@ public class Main {
 		bw2.write("SHUFFLE_INTERVAL,DIST_VALUE,INDEP_VALUE");
 		bw2.write(System.getProperty("line.separator"));
 
-		final int SAMPLE_SIZE = 50;
+		final int SAMPLE_SIZE = 5000;
 		int SHUFFLE_INTERVAL;
-		final int CACHE_SIZE = 6;
-		final int SHUFFLE_LENGTH = 4;
+		final int CACHE_SIZE = 10;
+		final int SHUFFLE_LENGTH = 5;
 		final double CONFIDENCE_LEVEL = 0.90;
 		
 		Tests test = new Tests(algo, g);
 		int id = 1;
 
-		final int MAX_INTERVAL = 2;
+		final int MAX_INTERVAL = 5;
 		
 		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) {
 			algo.setInterval(SHUFFLE_INTERVAL);
@@ -65,7 +65,7 @@ public class Main {
 		fw2.close();
 	}
 	
-	public static void main(String args[]) {
+	public static void main(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		Utilities.info = true;
 		Utilities.debug = false;
 
@@ -89,8 +89,8 @@ public class Main {
 //		g.exportToCSV("graphs/output.csv");
 
 //		Graph g = new Graph(SimpleNode.class,SimpleEdge.class);
-//		g.generateRandom(20,6);
-//		g.exportToCSV("graphs/testgraph3.csv");
+//		g.generateRandom(100,10);
+//		g.exportToCSV("graphs/testgraph4.csv");
 //		System.out.println(g);
 
 //		AlgorithmIncrementReference ref = new AlgorithmIncrementReference();
