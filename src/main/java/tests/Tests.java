@@ -36,6 +36,7 @@ public class Tests {
 	 */
 	public TestResults runFullTest(int sampleSize, int cacheSize, int shuffleLength,
 	                                double confidenceLevel) throws IOException {
+		Utilities.printInfo("Beginning the tests…");
 
 		int graphSize = this.initialGraph.vertexSet().size();
 		// Liste contenant les valeurs du test X² calculées
@@ -65,8 +66,9 @@ public class Tests {
 //			standardErrors.add(Math.sqrt(err));
 //			Utilities.printInfo("Computed standard error: " + standardErrors.get(n-1));
 		//	Utilities.printInfo("Coefficient d'indépendance : " + independenceValues.get(n-1));
-
-		} while(distributionValues.size() < 50);
+		
+			Utilities.printInfo(distributionValues.size() + "/50");
+		} while (distributionValues.size() < 50);
 
 		// Moyenne des valeurs du test X² calculées
 		double chiMeanDistrib = computeMean(distributionValues);
