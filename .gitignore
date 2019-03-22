@@ -2,3 +2,8 @@
 /target
 graphs/output.csv
 /*.csv
+/Untitled.ipynb
+/.classpath
+/.project
+/.ipynb_checkpoints
+/.settings

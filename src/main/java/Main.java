@@ -18,7 +18,7 @@ public class Main {
 
 		final String FILE_NUMBER = "1";
 		FileWriter fw = new FileWriter("statistical_data/resultats_shuffle_"+FILE_NUMBER+".csv", false);
-		FileWriter fw2 = new FileWriter("statistical_data/annexe_resultats_"+FILE_NUMBER+".csv",false);
+		FileWriter fw2 = new FileWriter("statistical_data/annexe_resultats_"+FILE_NUMBER+".csv", false);
 
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write("ID,SHUFFLE_INTERVAL,KHI2_DISTRIB_THEO,KHI2_DISTRIB_SUCC,KHI2_INDEP_THEO,KHI2_INDEP_SUCC");
@@ -28,20 +28,27 @@ public class Main {
 		bw2.write("SHUFFLE_INTERVAL,DIST_VALUE,INDEP_VALUE");
 		bw2.write(System.getProperty("line.separator"));
 
-		final int SAMPLE_SIZE = 5000;
+		final int SAMPLE_SIZE = 20;
 		int SHUFFLE_INTERVAL;
-		final int CACHE_SIZE = 10;
-		final int SHUFFLE_LENGTH = 5;
+		final int CACHE_SIZE = 3;
+		final int SHUFFLE_LENGTH = 2;
 		final double CONFIDENCE_LEVEL = 0.90;
-		
+
 		Tests test = new Tests(algo, g);
 		int id = 1;
 
 		final int MAX_INTERVAL = 5;
-		
-		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) {
+
+		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) { // TODO parallélisable
+			test.initTestSeries();
 			algo.setInterval(SHUFFLE_INTERVAL);
-			TestResults res = test.runFullTest(SAMPLE_SIZE, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
+			for (int i=0; i<50; i++) {
+				algo.initGraph((Graph) test.getInitialGraph().clone(), CACHE_SIZE, SHUFFLE_LENGTH);
+				test.runSimpleTest(SAMPLE_SIZE);
+				Utilities.printInfo(i+1 + "/50");
+			}
+			TestResults res = test.endTestSeries(CONFIDENCE_LEVEL);
+
 			String line = id + "," + SHUFFLE_INTERVAL + "," + res.getString();
 			bw.write(line);
 			bw.write(System.getProperty("line.separator"));
@@ -50,22 +57,23 @@ public class Main {
 			ArrayList<Double> distributionValues = res.getDistribValues();
 			ArrayList<Double> independenceValues = res.getIndepValues();
 
-			for(int k=0;k<distributionValues.size();k++){
-				line = id+","+distributionValues.get(k)+","+independenceValues.get(k);
+			for(int k=0; k<distributionValues.size(); k++){
+				line = id + "," + distributionValues.get(k) + "," + independenceValues.get(k);
 				bw2.write(line);
 				bw2.write(System.getProperty("line.separator"));
 				bw2.flush();
 			}
-
 			id++;
 		}
+
 		bw.close();
 		bw2.close();
 		fw.close();
 		fw2.close();
 	}
 	
-	public static void main(String args[]) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+	public static void main(String args[]) throws InvocationTargetException,
+	     NoSuchMethodException, InstantiationException, IllegalAccessException {
 		Utilities.info = true;
 		Utilities.debug = false;
 
