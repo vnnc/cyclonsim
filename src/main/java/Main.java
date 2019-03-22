@@ -28,9 +28,9 @@ public class Main {
 		bw2.write("SHUFFLE_INTERVAL,DIST_VALUE,INDEP_VALUE");
 		bw2.write(System.getProperty("line.separator"));
 
-		final int SAMPLE_SIZE = 50;
+		final int SAMPLE_SIZE = 20;
 		int SHUFFLE_INTERVAL;
-		final int CACHE_SIZE = 4;
+		final int CACHE_SIZE = 3;
 		final int SHUFFLE_LENGTH = 2;
 		final double CONFIDENCE_LEVEL = 0.90;
 
@@ -38,10 +38,17 @@ public class Main {
 		int id = 1;
 
 		final int MAX_INTERVAL = 5;
-		
-		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) {
+
+		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) { // TODO parallélisable
+			test.initTestSeries();
 			algo.setInterval(SHUFFLE_INTERVAL);
-			TestResults res = test.runFullTest(SAMPLE_SIZE, CACHE_SIZE, SHUFFLE_LENGTH, CONFIDENCE_LEVEL);
+			for (int i=0; i<50; i++) {
+				algo.initGraph((Graph) test.getInitialGraph().clone(), CACHE_SIZE, SHUFFLE_LENGTH);
+				test.runSimpleTest(SAMPLE_SIZE);
+				Utilities.printInfo(i+1 + "/50");
+			}
+			TestResults res = test.endTestSeries(CONFIDENCE_LEVEL);
+
 			String line = id + "," + SHUFFLE_INTERVAL + "," + res.getString();
 			bw.write(line);
 			bw.write(System.getProperty("line.separator"));
@@ -58,6 +65,7 @@ public class Main {
 			}
 			id++;
 		}
+
 		bw.close();
 		bw2.close();
 		fw.close();

@@ -56,17 +56,17 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 
 	@Override
 	public AbstractNode nextPeer(Integer nodeLabel){
-		for (int i=0; i<this.shuffleInterval; i++) {
-			this.shuffleAll();
-		}
-		
+		for (int i=0; i<this.shuffleInterval; i++) { this.shuffleAll(); }
+
 		Object n = this.getGraph().getNodeByLabel(nodeLabel);
 		ArrayList<SimpleNode> neighbors = this.graph.getNeighborsOfNode((SimpleNode) n);
+
 		if (neighbors.size() > 0) {
 			Random r = new Random();
 			int index = r.nextInt(neighbors.size());
 			return neighbors.get(index);
 		} else {
+			Utilities.printInfo("Attention : simulation anormale");
 			return new EmptyNode();
 		}
 	}
@@ -75,7 +75,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		ArrayList<SimpleNode> subset = new ArrayList<SimpleNode>();
 		subset.addAll(nodes);
 		Collections.shuffle(subset);
-		subset = new ArrayList<SimpleNode>(subset.subList(0,size));
+		subset = new ArrayList<SimpleNode>(subset.subList(0, size));
 		return subset;
 	}
 
@@ -92,7 +92,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		and a random peer, Q, within this subset, where l is a system parameter,
 		called shuffle length. */
 		int pNeighborsSubsetSize = Math.min(shuffleLength, nodePNeighbors.size());
-		if(nodePNeighbors.size() <= 0) {
+		if (nodePNeighbors.size() <= 0) {
 			Utilities.printDebug("[Error during shuffle, P has no neighbor] Graph: " + this.graph);
 			return;
 		}
@@ -123,7 +123,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 		int peerQNeighborsSubsetSize = Math.min(shuffleLength, peerQNeighbors.size());
 		if (peerQNeighbors.size() <= 0) {
 			Utilities.printDebug("[Error during shuffle, Q has no neighbor] Graph: " + this.graph);
-			return;
+			return; // TODO thrower une vraie erreur ?
 		}
 
 		ArrayList<SimpleNode> peerQNeighborsSubset = this.getRandomSubset(peerQNeighbors, peerQNeighborsSubsetSize);
@@ -139,9 +139,8 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 			n = this.graph.getNodeByLabel(n.getLabel());
 
 			if (this.graph.getEdge(n, nodeP) == null
-			&& this.graph.getEdge(nodeP, n) == null
-			&& nodeP != n) {
-				if(nodePNeighbors.size() < cacheSize){
+			            && this.graph.getEdge(nodeP, n) == null && nodeP != n) {
+				if(nodePNeighbors.size() < cacheSize){ //XXX <= ?
 					nodePKeptEntries.add(n);
 					this.graph.addEdge(nodeP,n);
 
@@ -174,9 +173,8 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 			n = this.graph.getNodeByLabel(n.getLabel());
 
 			if (this.graph.getEdge(n, peerQ) == null
-			&& this.graph.getEdge(peerQ, n) == null
-			&& peerQ != n) {
-				if (peerQNeighbors.size() < cacheSize) {
+			            && this.graph.getEdge(peerQ, n) == null && peerQ != n) {
+				if (peerQNeighbors.size() < cacheSize) { //XXX <= ?
 					peerQKeptEntries.add(n);
 					this.graph.addEdge(peerQ, n);
 					newEdges.add(this.graph.getEdge(peerQ, n));
@@ -198,7 +196,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 				}
 			}
 		}
-		
+
 		if (newEdges.isEmpty() || removedEdges.isEmpty()) {
 			Utilities.printDebug("Nothing happened");
 			this.nbEchecs++;
@@ -211,7 +209,7 @@ public class AlgorithmCyclonBasic extends AbstractAlgorithm {
 			this.nbEchanges++;
 		}
 	}
-	
+
 	public void setInterval(int shuffleInterval) {
 		this.shuffleInterval = shuffleInterval;
 	}
