@@ -34,7 +34,7 @@ public class Main {
 		final int SHUFFLE_LENGTH = 2;
 		final double CONFIDENCE_LEVEL = 0.90;
 
-		Tests test = new Tests(algo, g);
+		TestSeries test = new TestSeries(algo, g);
 		int id = 1;
 
 		final int MAX_INTERVAL = 5;

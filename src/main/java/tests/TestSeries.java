@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.io.IOException;
 
-public class Tests {
+public class TestSeries {
 
 	private Graph initialGraph;
 	private AbstractAlgorithm algorithm;
@@ -23,15 +23,15 @@ public class Tests {
 	private ArrayList<Double> correlationValues = new ArrayList<Double>();
 	private ArrayList<Double> independenceValues = new ArrayList<Double>();
 
-	public Tests(AbstractAlgorithm alg, Graph initialGraph) {
+	public TestSeries(AbstractAlgorithm alg, Graph initialGraph) {
 		this.algorithm = alg;
 		this.initialGraph = initialGraph;
 	}
-	
+
 	public Graph getInitialGraph() {
 		return this.initialGraph;
 	}
-	
+
 	public void initTestSeries() {
 		Utilities.printInfo("Beginning the tests…");
 
@@ -43,9 +43,9 @@ public class Tests {
 	
 	public void runSimpleTest (int sampleSize) {
 		ArrayList<Integer> samples = this.algorithm.getTestSample(sampleSize);
-		this.correlationValues.add(testCorrelation(samples));
-		this.distributionValues.add(testDistribution(samples));
-		this.independenceValues.add(testIndependence(samples));
+		this.correlationValues.add(this.testCorrelation(samples));
+		this.distributionValues.add(this.testDistribution(samples));
+		this.independenceValues.add(this.testIndependence(samples));
 	}
 	
 	public TestResults endTestSeries(double confidenceLevel) throws IOException {
@@ -79,7 +79,7 @@ public class Tests {
 		Utilities.printInfo("Expected critical value for independence test: " + criticalValueIndep);
 
 		return new TestResults(chiMeanDistrib, criticalValueDistrib, chiMeanIndep,
-		            criticalValueIndep, distributionValues, independenceValues);
+		            criticalValueIndep, independenceValues, distributionValues);
 	}
 
 	private double computeMean(ArrayList<Double> values) {

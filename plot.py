@@ -10,7 +10,7 @@ if len(sys.argv) == 1:
 else:
     filename = sys.argv[1]
     annexe = sys.argv[2]
-    
+
 filename = str(filename)
 annexe = str(annexe)
 
@@ -46,3 +46,4 @@ plt.title("Test d'indépendance")
 plt.xlabel("Shuffles entre getPeer")
 plt.ylabel("Valeur statistique")
 plt.show()
+
