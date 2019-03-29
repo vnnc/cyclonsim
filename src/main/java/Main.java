@@ -39,7 +39,8 @@ public class Main {
 
 		final int MAX_INTERVAL = 5;
 
-		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) { // TODO parallélisable
+		// TODO parallélisable
+		for(SHUFFLE_INTERVAL=1; SHUFFLE_INTERVAL<=MAX_INTERVAL; SHUFFLE_INTERVAL++) {
 			test.initTestSeries();
 			algo.setInterval(SHUFFLE_INTERVAL);
 			for (int i=0; i<50; i++) {
@@ -71,7 +72,7 @@ public class Main {
 		fw.close();
 		fw2.close();
 	}
-	
+
 	public static void main(String args[]) throws InvocationTargetException,
 	     NoSuchMethodException, InstantiationException, IllegalAccessException {
 		Utilities.info = true;
